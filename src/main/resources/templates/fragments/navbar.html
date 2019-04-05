@@ -1,0 +1,44 @@
+<th:block th:fragment>
+    <nav class="navbar navbar-expand-lg myBook-background">
+        <a class="navbar-brand text-white" th:href="@{/}">MyBook</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNavDropdown">
+            <ul class="navbar-nav">
+                <th:block sec:authorize="isAnonymous()">
+                    <li class="nav-item active">
+                        <a class="nav-link text-white" th:href="@{/}">Home</a>
+                    </li>
+                    <li class="nav-item active">
+                        <a class="nav-link text-white" th:href="@{/register}">Register</a>
+                    </li>
+                    <li class="nav-item active">
+                        <a class="nav-link text-white" th:href="@{/login}">Login</a>
+                    </li>
+                </th:block>
+                <th:block sec:authorize="isAuthenticated()">
+                    <li class="nav-item active">
+                        <a class="nav-link text-white" th:href="@{/profile/me}">Profile</a>
+                    </li>
+                    <li class="nav-item active">
+                        <a class="nav-link text-white" th:href="@{/dashboard}">Posts</a>
+                    </li>
+                    <li class="nav-item active">
+                        <a class="nav-link text-white" th:href="@{/friends/discover}">Make Friends</a>
+                    </li>
+                    <li class="nav-item active">
+                        <a class="nav-link text-white" th:href="@{/friends/request}">Friend Requests</a>
+                    </li>
+                    <li class="nav-item active">
+                        <a class="nav-link text-white" th:href="@{/dashboard}">Chat</a>
+                    </li>
+                    <li class="nav-item active">
+                        <form id="logout-form" th:action="@{/logout}" method="POST"></form>
+                        <a href="javascript:document.getElementById('logout-form').submit()" class="nav-link text-white">Logout</a>
+                    </li>
+                </th:block>
+            </ul>
+        </div>
+    </nav>
+</th:block>

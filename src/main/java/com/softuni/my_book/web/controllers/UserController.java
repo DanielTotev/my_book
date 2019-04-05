@@ -1,0 +1,105 @@
+package com.softuni.my_book.web.controllers;
+
+import com.softuni.my_book.domain.models.binding.UserRegisterBindingModel;
+import com.softuni.my_book.domain.models.service.UserServiceModel;
+import com.softuni.my_book.domain.models.view.UserAddFriendViewModel;
+import com.softuni.my_book.domain.models.view.UserFriendViewModel;
+import com.softuni.my_book.service.contracts.FriendRequestService;
+import com.softuni.my_book.service.contracts.UserService;
+import com.softuni.my_book.web.controllers.base.BaseController;
+import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.servlet.ModelAndView;
+
+import java.security.Principal;
+import java.util.List;
+import java.util.stream.Collectors;
+
+@Controller
+public class UserController extends BaseController {
+    private final UserService userService;
+    private final ModelMapper mapper;
+    private final FriendRequestService friendRequestService;
+
+    @Autowired
+    public UserController(UserService userService, ModelMapper mapper, FriendRequestService friendRequestService) {
+        this.userService = userService;
+        this.mapper = mapper;
+        this.friendRequestService = friendRequestService;
+    }
+
+
+    @GetMapping("/register")
+    public ModelAndView register() {
+        return super.view("register");
+    }
+
+    @PostMapping("/register")
+    public ModelAndView registerConfirm(@ModelAttribute UserRegisterBindingModel userRegisterBindingModel) {
+        boolean isRegistered = this.userService.registerUser(this.mapper.map(userRegisterBindingModel, UserServiceModel.class));
+
+        if(!isRegistered) {
+            throw new IllegalArgumentException("Something went wrong");
+        }
+
+        return super.redirect("/login");
+    }
+
+    @GetMapping("/login")
+    public ModelAndView login() {
+        return super.view("login");
+    }
+
+    @GetMapping("/friends/discover")
+    public ModelAndView discoverFriends(Principal principal, ModelAndView modelAndView) {
+        UserServiceModel currentUser = this.userService.findByUsername(principal.getName());
+        if(currentUser == null) {
+            throw new IllegalArgumentException("Something went wrong");
+        }
+
+        List<String> requestedUsersIds = this.friendRequestService.getUserRequestedFriendsIds(currentUser.getId());
+        // get the people who send friend request to the current user
+        List<String> potentialFriends = this.friendRequestService.getPotentialFriendsIds(currentUser.getId());
+
+        List<UserAddFriendViewModel> people = this.userService.findAll()
+                .stream()
+                .filter(x -> !x.getId().equals(currentUser.getId()))
+                .filter(u -> u.getProfile() != null)
+                .filter(u -> !u.getFriends().stream().map(UserServiceModel::getId).collect(Collectors.toList()).contains(currentUser.getId()))
+                .filter(u -> !potentialFriends.contains(u.getId()))
+                .filter(u -> !requestedUsersIds.contains(u.getId()))
+                .map(u -> {
+                    UserAddFriendViewModel viewModel = this.mapper.map(u, UserAddFriendViewModel.class);
+                    viewModel.setProfilePicture(u.getProfile().getProfilePicture());
+                    return viewModel;
+                })
+                .collect(Collectors.toList());
+
+        modelAndView.addObject("people", people);
+        return super.view("friends-discover", modelAndView);
+    }
+
+    @GetMapping("/friends")
+    @PreAuthorize("isAuthenticated()")
+    public ModelAndView getFriends(Principal principal, ModelAndView modelAndView) {
+        List<UserFriendViewModel> friends =
+                this.userService.findByUsername(principal.getName())
+                .getFriends()
+                .stream()
+                .map(u -> {
+                    UserFriendViewModel friend = this.mapper.map(u, UserFriendViewModel.class);
+                    friend.setProfilePicture(u.getProfile().getProfilePicture());
+
+                    return friend;
+                })
+                .collect(Collectors.toList());
+        modelAndView.addObject("friends", friends);
+
+        return super.view("friends", modelAndView);
+    }
+}

@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:include="~{fragments/head}">
+    </th:block>
+</head>
+<body>
+<header>
+    <th:block th:include="~{fragments/navbar}">
+    </th:block>
+    <style>
+        .text {
+            color: #ffffff;
+            border-radius:10px;
+            max-width:80%;
+            padding:10px;
+            margin:5px;
+            word-break: break-all;
+        }
+        .text::after {
+            clear: both;
+            content: '';
+        }
+        .left {
+            float: left;
+            background-color: dimgray;
+        }
+        .right {
+            float: right;
+            background-color: deepskyblue;
+        }
+        .clear {
+            clear:both;
+        }
+    </style>
+</header>
+<div class="container mt-4">
+    <div>
+        <div class="text right">
+            Message 1
+        </div>
+        <div class="clear"></div>
+        <div class="text left">
+            Message 2
+        </div>
+        <div class="clear"></div>
+        <div class="text right">
+            Message 1
+        </div>
+        <div class="clear"></div>
+        <div class="text right">
+            Message 1
+        </div>
+        <div class="clear"></div>
+        <div class="text left">
+            Message 2
+        </div>
+        <div class="clear"></div>
+        <div class="text left">
+            Message 1
+        </div>
+    </div>
+
+    <form class="fixed-bottom" th:action="@{/profile/create}" th:method="post">
+        <input type="text" id="text" class="form-control" style="display: inline-block;"/>
+        <input type="submit" value="Send" class="btn btn-primary" style="display: inline-block;">
+    </form>
+</div>
+</body>
+</html>
