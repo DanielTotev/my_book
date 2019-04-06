@@ -11,4 +11,6 @@ public interface MessageRepository extends JpaRepository<Message, String> {
 
     List<Message> getAllByChatId(String chatId);
 
+    List<Message> getAllByChatIdOrderBySendAtAsc(String chatId);
+
 }

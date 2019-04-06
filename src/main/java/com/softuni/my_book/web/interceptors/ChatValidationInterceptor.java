@@ -1,8 +1,7 @@
 package com.softuni.my_book.web.interceptors;
 
-import com.softuni.my_book.domain.models.securityContext.UserSecurityContextModel;
-import com.softuni.my_book.domain.models.service.ProfileServiceModel;
-import com.softuni.my_book.service.contracts.ProfileService;
+import com.softuni.my_book.domain.models.service.UserServiceModel;
+import com.softuni.my_book.service.contracts.UserService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -13,27 +12,24 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 @Component
-public class ProfileValidationInterceptor extends HandlerInterceptorAdapter {
-    private final ProfileService profileService;
+public class ChatValidationInterceptor extends HandlerInterceptorAdapter {
     private final ModelMapper mapper;
 
     @Autowired
-    public ProfileValidationInterceptor(ProfileService profileService, ModelMapper mapper) {
-        this.profileService = profileService;
+    public ChatValidationInterceptor(UserService userService, ModelMapper mapper) {
         this.mapper = mapper;
     }
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-        UserSecurityContextModel user = this.mapper.map(SecurityContextHolder
+        String friendUsername = request.getQueryString().split("=")[1];
+        UserServiceModel user = this.mapper.map(SecurityContextHolder
                 .getContext()
                 .getAuthentication()
-                .getPrincipal(), UserSecurityContextModel.class);
+                .getPrincipal(), UserServiceModel.class);
 
-        ProfileServiceModel profile = this.profileService.getByUsername(user.getUsername());
-
-        if(profile == null) {
-            response.sendRedirect("/profile/create");
+        if(user.getFriends().stream().noneMatch(u -> u.getUsername().equals(friendUsername))) {
+            response.sendRedirect("/friends");
             return false;
         }
 

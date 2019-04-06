@@ -36,7 +36,7 @@ public class MessageServiceImpl implements MessageService {
 
     @Override
     public List<MessageServiceModel> getAllByChatId(String chatId) {
-        return this.messageRepository.getAllByChatId(chatId)
+        return this.messageRepository.getAllByChatIdOrderBySendAtAsc(chatId)
                 .stream()
                 .map(chat -> this.mapper.map(chat, MessageServiceModel.class))
                 .collect(Collectors.toList());
