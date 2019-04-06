@@ -76,8 +76,8 @@
         .then(data => {
             console.log(data);
             data.map(message => {
-                const messageElement = $(`<div class="message">${message}</div>`);
-                message.userUsername == username ? messageElement.addClass('right') : messageElement.addClass('left');
+                const messageElement = $(`<div class="message">${message.text}</div>`);
+                message.senderName == username ? messageElement.addClass('right') : messageElement.addClass('left');
                 return messageElement;
             }).forEach(message => {
                 $(message).appendTo(messageDiv);
@@ -93,19 +93,13 @@
             'Content-Type': 'application/json'
         };
 
-        // $.ajax({
-        //     url: '/api/messages',
-        //     headers: headers,
-        //     body: JSON.stringify({text: messageText, userUsername: username, chatId: chatId}),
-        //     method: 'POST'
-        // })
-
         fetch('/api/messages/add', {
             method: 'post',
-            body: JSON.stringify({text: messageText, userUsername: username, chatId: chatId})
+            headers: headers,
+            body: JSON.stringify({text: messageText, senderName: username, chatId: chatId})
         })
 
-        // http.doPost('/api/messages', headers, JSON.stringify({text: messageText, userUsername: username, chatId: chatId}));
+        // http.doPost('/api/messages', headers, JSON.stringify({text: messageText, senderName: username, chatId: chatId}));
     };
 
 
@@ -114,7 +108,7 @@
     const channel = pusher.subscribe('message-channel');
     channel.bind('message-event', (message) => {
         const messageElement = $(`<div class="message">${message}</div>`);
-        message.userUsername == username ? messageElement.addClass('right') : messageElement.addClass('left');
+        message.senderName == username ? messageElement.addClass('right') : messageElement.addClass('left');
         messageElement.appendTo(messageDiv);
         $('<div class="clear"></div>').appendTo(messageDiv);
     });

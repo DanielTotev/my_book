@@ -8,7 +8,7 @@ public class MessageViewModel {
     private String text;
 
     @Expose
-    private String userUsername;
+    private String senderName;
 
     public String getText() {
         return text;
@@ -18,11 +18,11 @@ public class MessageViewModel {
         this.text = text;
     }
 
-    public String getUserUsername() {
-        return userUsername;
+    public String getSenderName() {
+        return senderName;
     }
 
-    public void setUserUsername(String userUsername) {
-        this.userUsername = userUsername;
+    public void setSenderName(String senderName) {
+        this.senderName = senderName;
     }
 }

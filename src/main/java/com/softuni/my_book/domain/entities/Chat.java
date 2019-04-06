@@ -17,7 +17,7 @@ public class Chat extends BaseEntity {
 
 
     @ManyToOne(targetEntity = User.class)
-    @JoinColumn(name = "first_user_id", nullable = false, referencedColumnName = "id")
+    @JoinColumn(name = "first_user_username", nullable = false, referencedColumnName = "username")
     public User getFirstUser() {
         return firstUser;
     }

@@ -6,7 +6,7 @@ import javax.validation.constraints.NotNull;
 public class MessageBindingModel {
     private String text;
     private String chatId;
-    private String userUsername;
+    private String senderName;
 
     public MessageBindingModel() {
     }
@@ -23,12 +23,12 @@ public class MessageBindingModel {
 
     @NotNull
     @NotEmpty
-    public String getUserUsername() {
-        return userUsername;
+    public String getSenderName() {
+        return senderName;
     }
 
-    public void setUserUsername(String userUsername) {
-        this.userUsername = userUsername;
+    public void setSenderName(String senderName) {
+        this.senderName = senderName;
     }
 
     @NotNull

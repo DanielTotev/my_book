@@ -8,4 +8,6 @@ public interface ChatService {
 
     ChatServiceModel findByUsernames(String[] usernames);
 
+    ChatServiceModel findById(String id);
+
 }

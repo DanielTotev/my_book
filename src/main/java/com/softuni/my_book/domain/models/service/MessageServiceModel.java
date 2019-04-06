@@ -5,7 +5,7 @@ import com.softuni.my_book.domain.entities.Chat;
 import java.time.LocalDateTime;
 
 public class MessageServiceModel {
-    private UserServiceModel user;
+    private String senderName;
     private ChatServiceModel chat;
     private String text;
     private LocalDateTime sendAt;
@@ -13,12 +13,21 @@ public class MessageServiceModel {
     public MessageServiceModel() {
     }
 
-    public UserServiceModel getUser() {
-        return user;
+//    public UserServiceModel getUser() {
+//        return user;
+//    }
+//
+//    public void setUser(UserServiceModel user) {
+//        this.user = user;
+//    }
+
+
+    public String getSenderName() {
+        return senderName;
     }
 
-    public void setUser(UserServiceModel user) {
-        this.user = user;
+    public void setSenderName(String senderName) {
+        this.senderName = senderName;
     }
 
     public ChatServiceModel getChat() {

@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "messages")
 public class Message extends BaseEntity {
-    private User user;
+    private String senderName;
     private Chat chat;
     private LocalDateTime sendAt;
     private String text;
@@ -16,13 +16,26 @@ public class Message extends BaseEntity {
     public Message() {
     }
 
-    public User getUser() {
-        return user;
+//    @ManyToOne(targetEntity = Chat.class)
+//    @JoinColumn(name = "user_id", referencedColumnName = "id", nullable = false)
+//    public User getUser() {
+//        return user;
+//    }
+
+    @Column(name = "sender_name", nullable = false)
+    public String getSenderName() {
+        return senderName;
     }
 
-    public void setUser(User user) {
-        this.user = user;
+    public void setSenderName(String senderName) {
+        this.senderName = senderName;
     }
+
+
+//
+//    public void setUser(User user) {
+//        this.user = user;
+//    }
 
     @ManyToOne(targetEntity = Chat.class)
     @JoinColumn(name = "chat_id", referencedColumnName = "id", nullable = false)

@@ -10,6 +10,8 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 public class ChatServiceImpl implements ChatService {
     private final ChatRepository chatRepository;
@@ -56,6 +58,17 @@ public class ChatServiceImpl implements ChatService {
 
         if(chat == null) {
             return null;
+        }
+
+        return this.mapper.map(chat, ChatServiceModel.class);
+    }
+
+    @Override
+    public ChatServiceModel findById(String id) {
+        Chat chat = this.chatRepository.findById(id).orElse(null);
+
+        if(chat == null) {
+            throw new IllegalArgumentException("Something went wrong");
         }
 
         return this.mapper.map(chat, ChatServiceModel.class);

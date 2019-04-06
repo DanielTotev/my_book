@@ -4,6 +4,7 @@ import com.softuni.my_book.domain.entities.base.BaseEntity;
 import com.softuni.my_book.domain.enums.Gender;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.time.LocalDate;
 
 @Entity
