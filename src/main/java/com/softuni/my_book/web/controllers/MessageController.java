@@ -53,11 +53,6 @@ public class MessageController {
         MessageViewModel viewModel =this.mapper.map(messageServiceModel, MessageViewModel.class);
 
         this.pusherService.triggerEvent("message-channel", "message-event", "message", viewModel);
-//        Pusher pusher = new Pusher("750575", "d09510aa6ece601ef463", "dcdb1e0b51f1e25829e8");
-//        pusher.setCluster("eu");
-//        pusher.setEncrypted(true);
-//
-//        pusher.trigger("message-channel", "message-event", Collections.singletonMap("message", viewModel));
 
         return this.jsonParser.parseToJson(viewModel);
     }

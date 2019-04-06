@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -33,7 +34,7 @@ public class ChatController extends BaseController {
 
     @GetMapping("/chat")
     @PreAuthorize("isAuthenticated()")
-    public ModelAndView getChat(@RequestParam("friend") String friendName, Principal principal, ModelAndView modelAndView) {
+    public ModelAndView createChat(@RequestParam("friend") String friendName, Principal principal) {
         ChatServiceModel chatServiceModel = this.chatService.findByUsernames(new String[]{friendName, principal.getName()});
 
         if(chatServiceModel == null) {
@@ -41,8 +42,15 @@ public class ChatController extends BaseController {
         }
 
 //        modelAndView.addObject("messages", messages);
-        modelAndView.addObject("chatId", chatServiceModel.getId());
+
+        return super.redirect("/chat/" + chatServiceModel.getId());
+    }
+
+    @GetMapping("/chat/{id}")
+    public ModelAndView getChat(@PathVariable String id, ModelAndView modelAndView, Principal principal) {
+        modelAndView.addObject("chatId", id);
         modelAndView.addObject("username", principal.getName());
+
         return super.view("chat", modelAndView);
     }
 }

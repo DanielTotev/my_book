@@ -36,32 +36,9 @@
 </header>
 <div class="container mt-4">
     <div id="messages">
-        <div class="message right">
-            Message 1
-        </div>
-        <div class="clear"></div>
-        <div class="message left">
-            Message 2
-        </div>
-        <div class="clear"></div>
-        <div class="message right">
-            Message 1
-        </div>
-        <div class="clear"></div>
-        <div class="message right">
-            Message 1
-        </div>
-        <div class="clear"></div>
-        <div class="message left">
-            Message 2
-        </div>
-        <div class="clear"></div>
-        <div class="message left">
-            Message 1
-        </div>
-    </div>
 
-    <form class="fixed-bottom" th:method="post">
+    </div>
+    <form th:method="post">
         <input type="text" id="text" name="text" class="form-control" style="display: inline-block;"/>
         <input type="submit" value="Send" class="btn btn-primary" style="display: inline-block;">
     </form>
@@ -87,7 +64,8 @@
 
     const formClickHandler = (e) => {
         e.preventDefault();
-        const messageText = $('#text').val();
+        let messageElement = $('#text');
+        const messageText = messageElement.val();
         const headers = {
             'Accept': 'application/json',
             'Content-Type': 'application/json'
@@ -97,8 +75,8 @@
             method: 'post',
             headers: headers,
             body: JSON.stringify({text: messageText, senderName: username, chatId: chatId})
-        })
-
+        });
+        messageElement.val('');
         // http.doPost('/api/messages', headers, JSON.stringify({text: messageText, senderName: username, chatId: chatId}));
     };
 
