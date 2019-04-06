@@ -18,6 +18,10 @@ public class PusherConfiguration {
 
     @Bean
     public Pusher pusher() {
-        return new Pusher(this.appId, this.key, this.secret);
+        Pusher pusher = new Pusher(this.appId, this.key, this.secret);
+        pusher.setCluster("eu");
+        pusher.setEncrypted(true);
+
+        return pusher;
     }
 }

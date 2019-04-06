@@ -1,5 +1,6 @@
 package com.softuni.my_book.web.controllers;
 
+import com.pusher.rest.Pusher;
 import com.softuni.my_book.domain.models.binding.MessageBindingModel;
 import com.softuni.my_book.domain.models.service.MessageServiceModel;
 import com.softuni.my_book.domain.models.view.MessageViewModel;
@@ -11,6 +12,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -51,6 +53,12 @@ public class MessageController {
         MessageViewModel viewModel =this.mapper.map(messageServiceModel, MessageViewModel.class);
 
         this.pusherService.triggerEvent("message-channel", "message-event", "message", viewModel);
+//        Pusher pusher = new Pusher("750575", "d09510aa6ece601ef463", "dcdb1e0b51f1e25829e8");
+//        pusher.setCluster("eu");
+//        pusher.setEncrypted(true);
+//
+//        pusher.trigger("message-channel", "message-event", Collections.singletonMap("message", viewModel));
+
         return this.jsonParser.parseToJson(viewModel);
     }
 }
