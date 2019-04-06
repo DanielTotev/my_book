@@ -110,7 +110,7 @@
         message = message.message;
         console.log('Pusher activated');
         console.log(message);
-        const messageElement = $(`<div class="message">${message}</div>`);
+        const messageElement = $(`<div class="message">${message.text}</div>`);
         message.senderName == username ? messageElement.addClass('right') : messageElement.addClass('left');
         messageElement.appendTo(messageDiv);
         $('<div class="clear"></div>').appendTo(messageDiv);
