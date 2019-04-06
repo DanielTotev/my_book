@@ -9,7 +9,7 @@
     <th:block th:include="~{fragments/navbar}">
     </th:block>
     <style>
-        .text {
+        .message {
             color: #ffffff;
             border-radius:10px;
             max-width:80%;
@@ -17,7 +17,7 @@
             margin:5px;
             word-break: break-all;
         }
-        .text::after {
+        .message::after {
             clear: both;
             content: '';
         }
@@ -35,36 +35,89 @@
     </style>
 </header>
 <div class="container mt-4">
-    <div>
-        <div class="text right">
+    <div id="messages">
+        <div class="message right">
             Message 1
         </div>
         <div class="clear"></div>
-        <div class="text left">
+        <div class="message left">
             Message 2
         </div>
         <div class="clear"></div>
-        <div class="text right">
+        <div class="message right">
             Message 1
         </div>
         <div class="clear"></div>
-        <div class="text right">
+        <div class="message right">
             Message 1
         </div>
         <div class="clear"></div>
-        <div class="text left">
+        <div class="message left">
             Message 2
         </div>
         <div class="clear"></div>
-        <div class="text left">
+        <div class="message left">
             Message 1
         </div>
     </div>
 
-    <form class="fixed-bottom" th:action="@{/profile/create}" th:method="post">
-        <input type="text" id="text" class="form-control" style="display: inline-block;"/>
+    <form class="fixed-bottom" th:method="post">
+        <input type="text" id="text" name="text" class="form-control" style="display: inline-block;"/>
         <input type="submit" value="Send" class="btn btn-primary" style="display: inline-block;">
     </form>
 </div>
+<script th:inline="javascript">
+    const chatId =/*[[${chatId}]]*/ 'defaultanyvalue';
+    const username =/*[[${username}]]*/ 'defaultanyvalue';
+    const messageDiv = $('#messages');
+
+    console.log(chatId);
+    messageService.getMessagesByChatRoomId(chatId)
+        .then(data => {
+            console.log(data);
+            data.map(message => {
+                const messageElement = $(`<div class="message">${message}</div>`);
+                message.userUsername == username ? messageElement.addClass('right') : messageElement.addClass('left');
+                return messageElement;
+            }).forEach(message => {
+                $(message).appendTo(messageDiv);
+                $('<div class="clear"></div>').appendTo(messageDiv);
+            })
+        });
+
+    const formClickHandler = (e) => {
+        e.preventDefault();
+        const messageText = $('#text').val();
+        const headers = {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        };
+
+        // $.ajax({
+        //     url: '/api/messages',
+        //     headers: headers,
+        //     body: JSON.stringify({text: messageText, userUsername: username, chatId: chatId}),
+        //     method: 'POST'
+        // })
+
+        fetch('/api/messages/add', {
+            method: 'post',
+            body: JSON.stringify({text: messageText, userUsername: username, chatId: chatId})
+        })
+
+        // http.doPost('/api/messages', headers, JSON.stringify({text: messageText, userUsername: username, chatId: chatId}));
+    };
+
+
+    $('form').on('submit', formClickHandler);
+
+    const channel = pusher.subscribe('message-channel');
+    channel.bind('message-event', (message) => {
+        const messageElement = $(`<div class="message">${message}</div>`);
+        message.userUsername == username ? messageElement.addClass('right') : messageElement.addClass('left');
+        messageElement.appendTo(messageDiv);
+        $('<div class="clear"></div>').appendTo(messageDiv);
+    });
+</script>
 </body>
 </html>

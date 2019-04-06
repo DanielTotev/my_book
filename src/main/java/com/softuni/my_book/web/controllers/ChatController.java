@@ -1,7 +1,6 @@
 package com.softuni.my_book.web.controllers;
 
 import com.softuni.my_book.domain.models.service.ChatServiceModel;
-import com.softuni.my_book.domain.models.view.MessageViewModel;
 import com.softuni.my_book.service.contracts.ChatService;
 import com.softuni.my_book.service.contracts.MessageService;
 import com.softuni.my_book.service.contracts.UserService;
@@ -15,8 +14,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.security.Principal;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Controller
 public class ChatController extends BaseController {
@@ -45,6 +42,7 @@ public class ChatController extends BaseController {
 
 //        modelAndView.addObject("messages", messages);
         modelAndView.addObject("chatId", chatServiceModel.getId());
+        modelAndView.addObject("username", principal.getName());
         return super.view("chat", modelAndView);
     }
 }

@@ -1,5 +1,7 @@
 package com.softuni.my_book.config;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.softuni.my_book.util.ValidationUtilImpl;
 import com.softuni.my_book.util.contracts.ValidationUtils;
 import org.modelmapper.ModelMapper;
@@ -23,5 +25,12 @@ public class ApplicationBeanConfiguration {
     @Bean
     public ValidationUtils validationUtils() {
         return new ValidationUtilImpl();
+    }
+
+    @Bean
+    public Gson gson() {
+        return new GsonBuilder()
+                .excludeFieldsWithoutExposeAnnotation()
+                .create();
     }
 }

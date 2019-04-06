@@ -16,9 +16,10 @@ public class ApplicationSecurityConfiguration extends WebSecurityConfigurerAdapt
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
-                .csrf()
-                .csrfTokenRepository(csrfTokenRepository())
-                .and()
+                .cors().disable()
+                .csrf().disable()
+//                .csrfTokenRepository(csrfTokenRepository())
+//                .and()
                 .authorizeRequests()
                 .antMatchers("/", "/login", "/register").anonymous()
                 .antMatchers("/js/**", "/css/**", "/fonts/**").permitAll()
