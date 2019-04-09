@@ -1,7 +1,6 @@
 package com.softuni.my_book.web.interceptors;
 
 import com.softuni.my_book.domain.models.service.UserServiceModel;
-import com.softuni.my_book.service.contracts.UserService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -16,7 +15,7 @@ public class ChatValidationInterceptor extends HandlerInterceptorAdapter {
     private final ModelMapper mapper;
 
     @Autowired
-    public ChatValidationInterceptor(UserService userService, ModelMapper mapper) {
+    public ChatValidationInterceptor(ModelMapper mapper) {
         this.mapper = mapper;
     }
 

@@ -1,8 +1,12 @@
 package com.softuni.my_book.service;
 
+import com.softuni.my_book.constants.ErrorMessages;
 import com.softuni.my_book.domain.entities.Role;
 import com.softuni.my_book.domain.entities.User;
 import com.softuni.my_book.domain.models.service.UserServiceModel;
+import com.softuni.my_book.errors.IllegalUserDataException;
+import com.softuni.my_book.errors.UserAlreadyExistsException;
+import com.softuni.my_book.errors.UserNotFoundException;
 import com.softuni.my_book.repository.RoleRepository;
 import com.softuni.my_book.repository.UserRepository;
 import com.softuni.my_book.service.contracts.UserService;
@@ -38,8 +42,12 @@ public class UserServiceImpl implements UserService {
     public boolean registerUser(UserServiceModel userServiceModel) {
         this.seedRoles();
         try {
-            if(!this.validationUtils.isValid(userServiceModel)) {
-                throw new IllegalArgumentException(this.validationUtils.getErrors(userServiceModel));
+            if (!this.validationUtils.isValid(userServiceModel)) {
+                throw new IllegalUserDataException();
+            }
+
+            if(this.userRepository.findByUsername(userServiceModel.getUsername()).orElse(null) != null) {
+                throw new UserAlreadyExistsException();
             }
 
             User user = this.mapper.map(userServiceModel, User.class);
@@ -49,7 +57,7 @@ public class UserServiceImpl implements UserService {
             user.setCredentialsNonExpired(true);
             user.setEnabled(true);
 
-            if(this.userRepository.count() == 0) {
+            if (this.userRepository.count() == 0) {
                 user.getAuthorities().add(this.roleRepository.findByAuthority("ROLE_ADMIN").orElse(null));
             } else {
                 user.getAuthorities().add(this.roleRepository.findByAuthority("ROLE_USER").orElse(null));
@@ -79,8 +87,8 @@ public class UserServiceImpl implements UserService {
     public UserServiceModel findByUsername(String username) {
         User user = this.userRepository.findByUsername(username).orElse(null);
 
-        if(user == null) {
-            return null;
+        if (user == null) {
+            throw new UserNotFoundException();
         }
 
         return this.mapper.map(user, UserServiceModel.class);
@@ -96,29 +104,28 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public boolean makeFriends(String firstUserId, String secondUserId) {
-        try {
-            User firstUser = this.userRepository.findById(firstUserId).orElse(null);
-            User secondUser = this.userRepository.findById(secondUserId).orElse(null);
+        User firstUser = this.userRepository.findById(firstUserId).orElse(null);
+        User secondUser = this.userRepository.findById(secondUserId).orElse(null);
 
-            firstUser.getFriends().add(secondUser);
-            secondUser.getFriends().add(firstUser);
-
-            this.userRepository.saveAndFlush(firstUser);
-            this.userRepository.saveAndFlush(secondUser);
-            return true;
-        } catch (Exception e) {
-            e.printStackTrace();
-            return false;
+        if(firstUser == null || secondUser == null) {
+            throw new UserNotFoundException();
         }
+
+        firstUser.getFriends().add(secondUser);
+        secondUser.getFriends().add(firstUser);
+
+        this.userRepository.saveAndFlush(firstUser);
+        this.userRepository.saveAndFlush(secondUser);
+        return true;
     }
 
     @Override
     public UserDetails loadUserByUsername(String s) throws UsernameNotFoundException {
-        return this.userRepository.findByUsername(s).orElseThrow(() -> new UsernameNotFoundException("Username not found!"));
+        return this.userRepository.findByUsername(s).orElseThrow(() -> new UsernameNotFoundException(ErrorMessages.USERNAME_NOT_FOUND_MESSAGE));
     }
 
     private void seedRoles() {
-        if(this.roleRepository.count() == 0) {
+        if (this.roleRepository.count() == 0) {
             Role user = new Role();
             user.setAuthority("ROLE_USER");
 

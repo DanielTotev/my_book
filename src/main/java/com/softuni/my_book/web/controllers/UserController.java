@@ -41,12 +41,7 @@ public class UserController extends BaseController {
 
     @PostMapping("/register")
     public ModelAndView registerConfirm(@ModelAttribute UserRegisterBindingModel userRegisterBindingModel) {
-        boolean isRegistered = this.userService.registerUser(this.mapper.map(userRegisterBindingModel, UserServiceModel.class));
-
-        if(!isRegistered) {
-            throw new IllegalArgumentException("Something went wrong");
-        }
-
+        this.userService.registerUser(this.mapper.map(userRegisterBindingModel, UserServiceModel.class));
         return super.redirect("/login");
     }
 
@@ -58,10 +53,6 @@ public class UserController extends BaseController {
     @GetMapping("/friends/discover")
     public ModelAndView discoverFriends(Principal principal, ModelAndView modelAndView) {
         UserServiceModel currentUser = this.userService.findByUsername(principal.getName());
-        if(currentUser == null) {
-            throw new IllegalArgumentException("Something went wrong");
-        }
-
         List<String> requestedUsersIds = this.friendRequestService.getUserRequestedFriendsIds(currentUser.getId());
         // get the people who send friend request to the current user
         List<String> potentialFriends = this.friendRequestService.getPotentialFriendsIds(currentUser.getId());

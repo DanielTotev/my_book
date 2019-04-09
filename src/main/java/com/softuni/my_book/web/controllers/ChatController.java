@@ -41,8 +41,6 @@ public class ChatController extends BaseController {
             chatServiceModel = this.chatService.saveChat(principal.getName(), friendName);
         }
 
-//        modelAndView.addObject("messages", messages);
-
         return super.redirect("/chat/" + chatServiceModel.getId());
     }
 

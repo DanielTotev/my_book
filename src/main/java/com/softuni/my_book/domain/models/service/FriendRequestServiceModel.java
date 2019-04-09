@@ -1,9 +1,12 @@
 package com.softuni.my_book.domain.models.service;
 
+import java.time.LocalDate;
+
 public class FriendRequestServiceModel {
     private String id;
     private UserServiceModel user;
     private UserServiceModel requestedFriend;
+    private LocalDate sendAt;
 
     public FriendRequestServiceModel() {
     }
@@ -30,5 +33,13 @@ public class FriendRequestServiceModel {
 
     public void setRequestedFriend(UserServiceModel requestedFriend) {
         this.requestedFriend = requestedFriend;
+    }
+
+    public LocalDate getSendAt() {
+        return sendAt;
+    }
+
+    public void setSendAt(LocalDate sendAt) {
+        this.sendAt = sendAt;
     }
 }

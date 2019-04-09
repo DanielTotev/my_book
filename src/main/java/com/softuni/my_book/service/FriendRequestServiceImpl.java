@@ -5,13 +5,17 @@ import com.softuni.my_book.domain.entities.User;
 import com.softuni.my_book.domain.models.service.FriendRequestServiceModel;
 import com.softuni.my_book.domain.models.service.UserServiceModel;
 import com.softuni.my_book.repository.FriendRequestRepository;
+import com.softuni.my_book.service.contracts.EmailService;
 import com.softuni.my_book.service.contracts.FriendRequestService;
 import com.softuni.my_book.service.contracts.UserService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -20,12 +24,15 @@ public class FriendRequestServiceImpl implements FriendRequestService {
     private final FriendRequestRepository friendRequestRepository;
     private final UserService userService;
     private final ModelMapper mapper;
+    private final EmailService emailService;
 
     @Autowired
-    public FriendRequestServiceImpl(FriendRequestRepository friendRequestRepository, UserService userService, ModelMapper mapper) {
+    public FriendRequestServiceImpl(FriendRequestRepository friendRequestRepository, UserService userService, ModelMapper mapper, EmailService emailService) {
         this.friendRequestRepository = friendRequestRepository;
         this.userService = userService;
         this.mapper = mapper;
+
+        this.emailService = emailService;
     }
 
     @Override
@@ -34,6 +41,7 @@ public class FriendRequestServiceImpl implements FriendRequestService {
             FriendRequest request = new FriendRequest();
             request.setUser(this.mapper.map(sender, User.class));
             request.setRequestedFriend(this.mapper.map(recipient, User.class));
+            request.setSendAt(LocalDate.now());
             this.friendRequestRepository.saveAndFlush(request);
             return true;
         } catch (Exception e) {
@@ -93,5 +101,21 @@ public class FriendRequestServiceImpl implements FriendRequestService {
             e.printStackTrace();
             return false;
         }
+    }
+
+    @Scheduled(cron = "0 0 12 * * ?")
+    public void notifyUserForRequest() {
+        System.out.println("Scheduled");
+        FriendRequest friendRequest = this.friendRequestRepository
+                .findAll()
+                .stream()
+                .filter(x -> x.getSendAt().equals(LocalDate.now()))
+                .findFirst().orElse(null);
+
+        if(friendRequest == null) {
+            return;
+        }
+
+        this.emailService.sendSimpleMessage(friendRequest.getRequestedFriend().getEmail(), "Friend Request", friendRequest.getUser().getUsername() + " send you a friend request!");
     }
 }
