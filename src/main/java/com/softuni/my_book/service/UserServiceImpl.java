@@ -115,6 +115,14 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public List<UserServiceModel> findAllWithDifferentUsername(String username) {
+        return this.userRepository.findAllByUsernameNot(username)
+                .stream()
+                .map(u -> this.mapper.map(u, UserServiceModel.class))
+                .collect(Collectors.toList());
+    }
+
+    @Override
     public UserDetails loadUserByUsername(String s) throws UsernameNotFoundException {
         return this.userRepository.findByUsername(s).orElseThrow(() -> new UsernameNotFoundException(ErrorMessages.USERNAME_NOT_FOUND_MESSAGE));
     }

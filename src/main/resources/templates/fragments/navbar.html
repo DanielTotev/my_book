@@ -33,6 +33,9 @@
                     <li class="nav-item active">
                         <a class="nav-link text-white" th:href="@{/dashboard}">Chat</a>
                     </li>
+                    <li class="nav-item active" sec:authorize="hasRole('ROLE_ADMIN')">
+                        <a class="nav-link text-white" th:href="@{/admin}">Admin</a>
+                    </li>
                     <li class="nav-item active">
                         <form id="logout-form" th:action="@{/logout}" method="POST"></form>
                         <a href="javascript:document.getElementById('logout-form').submit()" class="nav-link text-white">Logout</a>

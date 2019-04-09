@@ -18,4 +18,6 @@ public interface UserService extends UserDetailsService {
     List<UserServiceModel> findAll();
 
     boolean makeFriends(String firstUserId, String secondUserId);
+
+    List<UserServiceModel> findAllWithDifferentUsername(String username);
 }

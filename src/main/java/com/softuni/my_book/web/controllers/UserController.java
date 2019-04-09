@@ -3,6 +3,7 @@ package com.softuni.my_book.web.controllers;
 import com.softuni.my_book.domain.models.binding.UserRegisterBindingModel;
 import com.softuni.my_book.domain.models.service.UserServiceModel;
 import com.softuni.my_book.domain.models.view.UserAddFriendViewModel;
+import com.softuni.my_book.domain.models.view.UserAllViewModel;
 import com.softuni.my_book.domain.models.view.UserFriendViewModel;
 import com.softuni.my_book.service.contracts.FriendRequestService;
 import com.softuni.my_book.service.contracts.UserService;
@@ -52,6 +53,7 @@ public class UserController extends BaseController {
 
     @GetMapping("/friends/discover")
     public ModelAndView discoverFriends(Principal principal, ModelAndView modelAndView) {
+        // TODO should be refactored
         UserServiceModel currentUser = this.userService.findByUsername(principal.getName());
         List<String> requestedUsersIds = this.friendRequestService.getUserRequestedFriendsIds(currentUser.getId());
         // get the people who send friend request to the current user
@@ -92,5 +94,17 @@ public class UserController extends BaseController {
         modelAndView.addObject("friends", friends);
 
         return super.view("friends", modelAndView);
+    }
+
+    @GetMapping("/admin")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public ModelAndView admin(Principal principal, ModelAndView modelAndView) {
+        List<UserAllViewModel> users = this.userService.findAllWithDifferentUsername(principal.getName())
+                .stream()
+                .map(u -> this.mapper.map(u, UserAllViewModel.class))
+                .collect(Collectors.toList());
+        modelAndView.addObject("users", users);
+
+        return super.view("admin", modelAndView);
     }
 }
