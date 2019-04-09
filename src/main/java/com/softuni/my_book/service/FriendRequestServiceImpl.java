@@ -105,17 +105,15 @@ public class FriendRequestServiceImpl implements FriendRequestService {
 
     @Scheduled(cron = "0 0 12 * * ?")
     public void notifyUserForRequest() {
-        System.out.println("Scheduled");
-        FriendRequest friendRequest = this.friendRequestRepository
+        List<FriendRequest> friendRequests = this.friendRequestRepository
                 .findAll()
                 .stream()
                 .filter(x -> x.getSendAt().equals(LocalDate.now()))
-                .findFirst().orElse(null);
+                .collect(Collectors.toList());
 
-        if(friendRequest == null) {
-            return;
-        }
-
-        this.emailService.sendSimpleMessage(friendRequest.getRequestedFriend().getEmail(), "Friend Request", friendRequest.getUser().getUsername() + " send you a friend request!");
+        friendRequests
+                .forEach(friendRequest -> {
+                    this.emailService.sendSimpleMessage(friendRequest.getRequestedFriend().getEmail(), "Friend Request", friendRequest.getUser().getUsername() + " send you a friend request!");
+                });
     }
 }
