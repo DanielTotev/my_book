@@ -41,34 +41,29 @@ public class UserServiceImpl implements UserService {
     @Override
     public boolean registerUser(UserServiceModel userServiceModel) {
         this.seedRoles();
-        try {
-            if (!this.validationUtils.isValid(userServiceModel)) {
-                throw new IllegalUserDataException();
-            }
-
-            if(this.userRepository.findByUsername(userServiceModel.getUsername()).orElse(null) != null) {
-                throw new UserAlreadyExistsException();
-            }
-
-            User user = this.mapper.map(userServiceModel, User.class);
-            user.setPassword(this.encoder.encode(user.getPassword()));
-            user.setAccountNonExpired(true);
-            user.setAccountNonLocked(true);
-            user.setCredentialsNonExpired(true);
-            user.setEnabled(true);
-
-            if (this.userRepository.count() == 0) {
-                user.getAuthorities().add(this.roleRepository.findByAuthority("ROLE_ADMIN").orElse(null));
-            } else {
-                user.getAuthorities().add(this.roleRepository.findByAuthority("ROLE_USER").orElse(null));
-            }
-
-            this.userRepository.saveAndFlush(user);
-            return true;
-        } catch (Exception e) {
-            e.printStackTrace();
-            return false;
+        if (!this.validationUtils.isValid(userServiceModel)) {
+            throw new IllegalUserDataException();
         }
+
+        if (this.userRepository.findByUsername(userServiceModel.getUsername()).orElse(null) != null) {
+            throw new UserAlreadyExistsException();
+        }
+
+        User user = this.mapper.map(userServiceModel, User.class);
+        user.setPassword(this.encoder.encode(user.getPassword()));
+        user.setAccountNonExpired(true);
+        user.setAccountNonLocked(true);
+        user.setCredentialsNonExpired(true);
+        user.setEnabled(true);
+
+        if (this.userRepository.count() == 0) {
+            user.getAuthorities().add(this.roleRepository.findByAuthority("ROLE_ADMIN").orElse(null));
+        } else {
+            user.getAuthorities().add(this.roleRepository.findByAuthority("ROLE_USER").orElse(null));
+        }
+
+        this.userRepository.saveAndFlush(user);
+        return true;
     }
 
     @Override
@@ -107,7 +102,7 @@ public class UserServiceImpl implements UserService {
         User firstUser = this.userRepository.findById(firstUserId).orElse(null);
         User secondUser = this.userRepository.findById(secondUserId).orElse(null);
 
-        if(firstUser == null || secondUser == null) {
+        if (firstUser == null || secondUser == null) {
             throw new UserNotFoundException();
         }
 
@@ -132,8 +127,12 @@ public class UserServiceImpl implements UserService {
             Role admin = new Role();
             admin.setAuthority("ROLE_ADMIN");
 
+            Role moderator = new Role();
+            moderator.setAuthority("ROLE_MODERATOR");
+
             this.roleRepository.saveAndFlush(user);
             this.roleRepository.saveAndFlush(admin);
+            this.roleRepository.saveAndFlush(moderator);
         }
     }
 }
