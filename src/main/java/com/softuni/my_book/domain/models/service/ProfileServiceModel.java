@@ -2,6 +2,9 @@ package com.softuni.my_book.domain.models.service;
 
 import com.softuni.my_book.domain.enums.Gender;
 
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
 
 public class ProfileServiceModel {
@@ -15,6 +18,7 @@ public class ProfileServiceModel {
     public ProfileServiceModel() {
     }
 
+    @Min(0)
     public int getAge() {
         return age;
     }
@@ -23,6 +27,7 @@ public class ProfileServiceModel {
         this.age = age;
     }
 
+    @NotNull
     public LocalDate getBirthday() {
         return birthday;
     }
@@ -31,6 +36,7 @@ public class ProfileServiceModel {
         this.birthday = birthday;
     }
 
+    @NotNull
     public Gender getGender() {
         return gender;
     }
@@ -39,6 +45,8 @@ public class ProfileServiceModel {
         this.gender = gender;
     }
 
+    @NotNull
+    @NotEmpty
     public String getProfilePicture() {
         return profilePicture;
     }
@@ -47,6 +55,8 @@ public class ProfileServiceModel {
         this.profilePicture = profilePicture;
     }
 
+    @NotNull
+    @NotEmpty
     public String getEducation() {
         return education;
     }
