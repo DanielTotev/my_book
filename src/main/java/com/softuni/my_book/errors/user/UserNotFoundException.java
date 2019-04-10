@@ -1,4 +1,4 @@
-package com.softuni.my_book.errors;
+package com.softuni.my_book.errors.user;
 
 import com.softuni.my_book.constants.ErrorMessages;
 import com.softuni.my_book.errors.base.BaseCustomException;

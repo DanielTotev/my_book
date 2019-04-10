@@ -6,4 +6,6 @@ public interface ProfileService {
     ProfileServiceModel create(ProfileServiceModel profileServiceModel);
 
     ProfileServiceModel getByUsername(String username);
+
+    ProfileServiceModel getByUserId(String userId);
 }

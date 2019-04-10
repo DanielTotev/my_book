@@ -2,6 +2,7 @@ package com.softuni.my_book.service;
 
 import com.softuni.my_book.domain.entities.Profile;
 import com.softuni.my_book.domain.models.service.ProfileServiceModel;
+import com.softuni.my_book.errors.profile.ProfileNotFoundException;
 import com.softuni.my_book.repository.ProfileRepository;
 import com.softuni.my_book.service.contracts.ProfileService;
 import com.softuni.my_book.service.contracts.UserService;
@@ -37,19 +38,17 @@ public class ProfileServiceImpl implements ProfileService {
 
     @Override
     public ProfileServiceModel getByUsername(String username) {
-//        return this.profileRepository
-//                .findAll()
-//                .stream()
-//                .filter(x -> x.getUser().getUsername().equals(username))
-//                .map(x -> this.mapper.map(x, ProfileServiceModel.class))
-//                .findFirst()
-//                .orElse(null);
+        Profile profile = this.profileRepository
+                .findByUserUsername(username)
+                .orElseThrow(ProfileNotFoundException::new);
+        return this.mapper.map(profile, ProfileServiceModel.class);
+    }
 
-        Profile profile = this.profileRepository.findByUserName(username).orElse(null);
-
-        if(profile == null) {
-            return null;
-        }
+    @Override
+    public ProfileServiceModel getByUserId(String userId) {
+        Profile profile = this.profileRepository
+                .findByUserId(userId)
+                .orElseThrow(ProfileNotFoundException::new);
 
         return this.mapper.map(profile, ProfileServiceModel.class);
     }

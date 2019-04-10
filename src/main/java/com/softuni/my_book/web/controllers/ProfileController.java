@@ -15,6 +15,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -80,16 +81,24 @@ public class ProfileController extends BaseController {
     @PreAuthorize("isAuthenticated()")
     public ModelAndView profilePage(ModelAndView modelAndView, Principal principal) {
         ProfileServiceModel profileServiceModel = this.profileService.getByUsername(principal.getName());
-
-        if(profileServiceModel == null) {
-            throw new IllegalArgumentException("No profile!");
-        }
-
         ProfileViewModel viewModel = this.mapper.map(profileServiceModel, ProfileViewModel.class);
         viewModel.setUsername(principal.getName());
 
         modelAndView.addObject("profile", viewModel);
 
+        return super.view("profile-details", modelAndView);
+    }
+
+    @GetMapping("/users/profile/{username}")
+    @PreAuthorize("isAuthenticated()")
+    public ModelAndView profileDetails(@PathVariable("username") String username, ModelAndView modelAndView) {
+        ProfileServiceModel profileServiceModel = this.profileService
+                .getByUsername(username);
+
+        ProfileViewModel profileViewModel = this.mapper.map(profileServiceModel, ProfileViewModel.class);
+        profileViewModel.setUsername(username);
+
+        modelAndView.addObject("profile", profileViewModel);
         return super.view("profile-details", modelAndView);
     }
 }

@@ -23,7 +23,7 @@
                                         <input type="submit" value="Send" class="btn btn-success">
                                     </form>
                                     <!--<a href="javascript:document.getElementById('form').submit()" class="btn btn-success">Add Friend</a>-->
-                                    <a href="#" class="btn btn-primary">View Profile</a>
+                                    <a th:href="@{/users/profile/{id}(id=${user.username})}" class="btn btn-primary">View Profile</a>
                                 </div>
                             </div>
                         </div>

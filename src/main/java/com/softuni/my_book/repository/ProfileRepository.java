@@ -10,7 +10,11 @@ import java.util.Optional;
 
 @Repository
 public interface ProfileRepository extends JpaRepository<Profile, String> {
+//
+//    @Query("SELECT p FROM Profile p JOIN p.user u WHERE u.username = :username")
+//    Optional<Profile> findByUserName(@Param("username") String username);
+//
+    Optional<Profile> findByUserId(String id);
 
-    @Query("SELECT p FROM Profile p JOIN p.user u WHERE u.username = :username")
-    Optional<Profile> findByUserName(@Param("username") String username);
+    Optional<Profile> findByUserUsername(String username);
 }
