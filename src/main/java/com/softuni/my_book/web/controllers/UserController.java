@@ -1,10 +1,13 @@
 package com.softuni.my_book.web.controllers;
 
+import com.softuni.my_book.constants.ErrorMessages;
 import com.softuni.my_book.domain.models.binding.UserRegisterBindingModel;
 import com.softuni.my_book.domain.models.service.UserServiceModel;
 import com.softuni.my_book.domain.models.view.UserAddFriendViewModel;
 import com.softuni.my_book.domain.models.view.UserAllViewModel;
 import com.softuni.my_book.domain.models.view.UserFriendViewModel;
+import com.softuni.my_book.errors.base.BaseCustomException;
+import com.softuni.my_book.errors.user.UserPasswordsDoNotMatchException;
 import com.softuni.my_book.service.contracts.FriendRequestService;
 import com.softuni.my_book.service.contracts.UserService;
 import com.softuni.my_book.web.controllers.base.BaseController;
@@ -12,10 +15,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.security.Principal;
@@ -37,13 +37,22 @@ public class UserController extends BaseController {
 
 
     @GetMapping("/register")
-    public ModelAndView register() {
+    public ModelAndView register(@ModelAttribute(name = "bindingModel") UserRegisterBindingModel userRegisterBindingModel) {
         return super.view("register");
     }
 
     @PostMapping("/register")
-    public ModelAndView registerConfirm(@ModelAttribute UserRegisterBindingModel userRegisterBindingModel) {
-        this.userService.registerUser(this.mapper.map(userRegisterBindingModel, UserServiceModel.class));
+    public ModelAndView registerConfirm(@ModelAttribute(name = "bindingModel") UserRegisterBindingModel userRegisterBindingModel, ModelAndView modelAndView) {
+        try {
+            if(!userRegisterBindingModel.getPassword().equals(userRegisterBindingModel.getConfirmPassword())) {
+                throw new UserPasswordsDoNotMatchException();
+            }
+            this.userService.registerUser(this.mapper.map(userRegisterBindingModel, UserServiceModel.class));
+        } catch (BaseCustomException ex) {
+            String error = ex.getClass().getAnnotation(ResponseStatus.class).reason();
+            modelAndView.addObject("error", error);
+            return super.view("register", modelAndView);
+        }
         return super.redirect("/login");
     }
 
