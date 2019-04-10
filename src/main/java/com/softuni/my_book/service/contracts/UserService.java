@@ -20,4 +20,6 @@ public interface UserService extends UserDetailsService {
     boolean makeFriends(String firstUserId, String secondUserId);
 
     List<UserServiceModel> findAllWithDifferentUsername(String username);
+
+    UserServiceModel setRole(String id, String role);
 }

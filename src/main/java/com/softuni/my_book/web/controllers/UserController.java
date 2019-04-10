@@ -14,6 +14,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -106,5 +107,17 @@ public class UserController extends BaseController {
         modelAndView.addObject("users", users);
 
         return super.view("admin", modelAndView);
+    }
+
+    @PostMapping("/users/set-moderator/{id}")
+    public ModelAndView setModerator(@PathVariable("id") String  id){
+        this.userService.setRole(id, "ROLE_MODERATOR");
+        return super.redirect("/admin");
+    }
+
+    @PostMapping("/users/set-user/{id}")
+    public ModelAndView setUser(@PathVariable("id") String  id){
+        this.userService.setRole(id, "ROLE_USER");
+        return super.redirect("/admin");
     }
 }

@@ -123,6 +123,18 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public UserServiceModel setRole(String id, String role) {
+        User user = this.userRepository.findById(id)
+                .orElseThrow(UserNotFoundException::new);
+
+        user.getAuthorities().clear();
+        user.getAuthorities().add(this.roleRepository.findByAuthority(role).orElse(null));
+        User savedUser = this.userRepository.saveAndFlush(user);
+
+        return this.mapper.map(savedUser, UserServiceModel.class);
+    }
+
+    @Override
     public UserDetails loadUserByUsername(String s) throws UsernameNotFoundException {
         return this.userRepository.findByUsername(s).orElseThrow(() -> new UsernameNotFoundException(ErrorMessages.USERNAME_NOT_FOUND_MESSAGE));
     }
