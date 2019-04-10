@@ -10,6 +10,7 @@
     </th:block>
 </header>
 <div class="container mt-4">
+    <div th:if="${error != null}" class="alert alert-warning" th:text="${error}"></div>
     <h1>Post</h1>
     <form th:action="@{/post/create}" th:method="post" th:object="${bindingModel}" enctype="multipart/form-data">
         <div class="form-group">

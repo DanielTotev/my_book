@@ -1,5 +1,8 @@
 package com.softuni.my_book.domain.models.service;
 
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
+
 public class PostServiceModel {
     private String id;
     private String title;
@@ -17,6 +20,8 @@ public class PostServiceModel {
         this.id = id;
     }
 
+    @NotNull
+    @NotEmpty
     public String getTitle() {
         return title;
     }
@@ -25,6 +30,8 @@ public class PostServiceModel {
         this.title = title;
     }
 
+    @NotNull
+    @NotEmpty
     public String getImageUrl() {
         return imageUrl;
     }

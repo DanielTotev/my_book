@@ -9,5 +9,7 @@ public final class ErrorMessages {
 
     public static final String PROFILE_NOT_FOUND_MESSAGE = "No profile found!";
 
+    public static final String ILLEGAL_POST_DATA_MESSAGE = "Invalid Input data";
+
     private ErrorMessages() { }
 }
