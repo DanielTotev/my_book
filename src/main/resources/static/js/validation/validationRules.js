@@ -5,9 +5,15 @@ const validationRules = (() => {
 
     const passwordValidator = val => !validator.isEmpty(val);
 
+    const titleValidator = val => val !== null && !validator.isEmpty(val);
+
+    const imageValidator = val => val !== null && !validator.isEmpty(val);
+
     return {
         emailValidator,
         usernameValidator,
-        passwordValidator
+        passwordValidator,
+        titleValidator,
+        imageValidator
     };
 })();
