@@ -5,6 +5,7 @@ import com.softuni.my_book.domain.entities.Post;
 import com.softuni.my_book.domain.models.service.PostServiceModel;
 import com.softuni.my_book.domain.models.service.UserServiceModel;
 import com.softuni.my_book.errors.post.IllegalPostDataException;
+import com.softuni.my_book.errors.post.PostAlreadyLikedException;
 import com.softuni.my_book.errors.post.PostNotFoundException;
 import com.softuni.my_book.repository.PostRepository;
 import com.softuni.my_book.service.contracts.PostService;
@@ -58,6 +59,11 @@ public class PostServiceImpl implements PostService {
         UserServiceModel userServiceModel = this.userService.findByUsername(username);
         PostServiceModel postServiceModel = findById(postId);
         postServiceModel.getUsersLikedPost().add(userServiceModel);
+
+        if(postServiceModel.getUsersLikedPost().stream().anyMatch(x -> x.getUsername().equals(username))) {
+            throw new PostAlreadyLikedException();
+        }
+
         Post post = this.mapper.map(postServiceModel, Post.class);
         this.postRepository.saveAndFlush(post);
         return true;

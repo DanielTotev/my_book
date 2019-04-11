@@ -11,6 +11,7 @@ public final class ErrorMessages {
 
     public static final String ILLEGAL_POST_DATA_MESSAGE = "Invalid Input data";
     public static final String POST_NOT_FOUND_MESSAGE = "Post not found!";
+    public static final String POST_ALREADY_LIKED_MESSAGE = "You have already liked this post once!";
 
     private ErrorMessages() { }
 }
