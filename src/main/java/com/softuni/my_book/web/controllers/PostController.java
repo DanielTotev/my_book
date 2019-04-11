@@ -3,6 +3,7 @@ package com.softuni.my_book.web.controllers;
 import com.softuni.my_book.domain.models.binding.PostCreateBindingModel;
 import com.softuni.my_book.domain.models.service.PostServiceModel;
 import com.softuni.my_book.domain.models.service.UserServiceModel;
+import com.softuni.my_book.domain.models.view.PostViewModel;
 import com.softuni.my_book.errors.base.BaseCustomException;
 import com.softuni.my_book.service.contracts.CloudinaryService;
 import com.softuni.my_book.service.contracts.PostService;
@@ -21,6 +22,7 @@ import org.springframework.web.servlet.ModelAndView;
 import java.io.IOException;
 import java.security.Principal;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Controller
 public class PostController extends BaseController {
@@ -67,9 +69,13 @@ public class PostController extends BaseController {
     @GetMapping("/dashboard")
     @PreAuthorize("isAuthenticated()")
     public ModelAndView dashboard(ModelAndView modelAndView, Principal principal) {
-        List<PostServiceModel> posts =
-                this.postService.getAllPostsByUsername(principal.getName());
+        List<PostViewModel> posts =
+                this.postService.getAllPostsByUsername(principal.getName())
+                .stream()
+                .map(post -> this.mapper.map(post, PostViewModel.class))
+                .collect(Collectors.toList());
 
-        return null;
+        modelAndView.addObject("posts", posts);
+        return view("dashboard", modelAndView);
     }
 }
