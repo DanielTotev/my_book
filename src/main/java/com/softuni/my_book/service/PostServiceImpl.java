@@ -4,7 +4,8 @@ import com.ea.async.Async;
 import com.softuni.my_book.domain.entities.Post;
 import com.softuni.my_book.domain.models.service.PostServiceModel;
 import com.softuni.my_book.domain.models.service.UserServiceModel;
-import com.softuni.my_book.errors.user.IllegalPostDataException;
+import com.softuni.my_book.errors.post.IllegalPostDataException;
+import com.softuni.my_book.errors.post.PostNotFoundException;
 import com.softuni.my_book.repository.PostRepository;
 import com.softuni.my_book.service.contracts.PostService;
 import com.softuni.my_book.service.contracts.UserService;
@@ -13,7 +14,6 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
@@ -53,19 +53,35 @@ public class PostServiceImpl implements PostService {
         return userPosts;
     }
 
+    @Override
+    public boolean likePost(String postId, String username) {
+        UserServiceModel userServiceModel = this.userService.findByUsername(username);
+        PostServiceModel postServiceModel = findById(postId);
+        postServiceModel.getUsersLikedPost().add(userServiceModel);
+        Post post = this.mapper.map(postServiceModel, Post.class);
+        this.postRepository.saveAndFlush(post);
+        return true;
+    }
+
+    @Override
+    public PostServiceModel findById(String id) {
+        Post post = postRepository.findById(id).orElseThrow(PostNotFoundException::new);
+        return this.mapper.map(post, PostServiceModel.class);
+    }
+
     private CompletableFuture<List<PostServiceModel>> getUserPosts(String username) {
         List<PostServiceModel> posts = postRepository.getAllByUploaderUsername(username)
                 .stream()
-                .map(p -> mapper.map(p, PostServiceModel.class))
+                .map(p -> this.mapper.map(p, PostServiceModel.class))
                 .collect(Collectors.toList());
 
         return CompletableFuture.completedFuture(posts);
     }
 
     private CompletableFuture<List<PostServiceModel>>getFriendsPostsByUsername(String username) {
-        List<PostServiceModel> posts = postRepository.getFriendsPosts(username)
+        List<PostServiceModel> posts = this.postRepository.getFriendsPosts(username)
                 .stream()
-                .map(x -> mapper.map(x, PostServiceModel.class))
+                .map(x -> this.mapper.map(x, PostServiceModel.class))
                 .collect(Collectors.toList());
 
         return CompletableFuture.completedFuture(posts);

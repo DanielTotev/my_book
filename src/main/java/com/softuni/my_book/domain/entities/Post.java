@@ -1,6 +1,8 @@
 package com.softuni.my_book.domain.entities;
 
 import com.softuni.my_book.domain.entities.base.BaseEntity;
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
 
 import javax.persistence.*;
 import java.util.List;
@@ -48,6 +50,7 @@ public class Post extends BaseEntity {
     @JoinTable(name = "posts_users_likes",
             joinColumns = @JoinColumn(name = "post_id", referencedColumnName = "id"),
             inverseJoinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"))
+    @LazyCollection(LazyCollectionOption.FALSE)
     public List<User> getUsersLikedPost() {
         return usersLikedPost;
     }

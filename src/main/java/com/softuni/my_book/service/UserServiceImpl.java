@@ -68,7 +68,8 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserServiceModel findById(String id) {
-        return null;
+        User user = this.userRepository.findById(id).orElseThrow(UserNotFoundException::new);
+        return this.mapper.map(user, UserServiceModel.class);
     }
 
     @Override

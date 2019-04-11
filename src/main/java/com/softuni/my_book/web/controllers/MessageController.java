@@ -22,16 +22,14 @@ public class MessageController {
     private final ModelMapper mapper;
     private final PusherService pusherService;
     private final JsonParser jsonParser;
-    private final ValidationUtils validationUtils;
 
 
     @Autowired
-    public MessageController(MessageService messageService, ModelMapper mapper, PusherService pusherService, JsonParser jsonParser, ValidationUtils validationUtils) {
+    public MessageController(MessageService messageService, ModelMapper mapper, PusherService pusherService, JsonParser jsonParser) {
         this.messageService = messageService;
         this.mapper = mapper;
         this.pusherService = pusherService;
         this.jsonParser = jsonParser;
-        this.validationUtils = validationUtils;
     }
 
     @GetMapping()

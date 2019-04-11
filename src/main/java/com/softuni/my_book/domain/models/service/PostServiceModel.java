@@ -2,12 +2,14 @@ package com.softuni.my_book.domain.models.service;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
+import java.util.List;
 
 public class PostServiceModel {
     private String id;
     private String title;
     private String imageUrl;
     private UserServiceModel uploader;
+    private List<UserServiceModel> usersLikedPost;
 
     public PostServiceModel() {
     }
@@ -46,5 +48,13 @@ public class PostServiceModel {
 
     public void setUploader(UserServiceModel uploader) {
         this.uploader = uploader;
+    }
+
+    public List<UserServiceModel> getUsersLikedPost() {
+        return usersLikedPost;
+    }
+
+    public void setUsersLikedPost(List<UserServiceModel> usersLikedPost) {
+        this.usersLikedPost = usersLikedPost;
     }
 }

@@ -13,10 +13,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.io.IOException;
@@ -72,10 +69,20 @@ public class PostController extends BaseController {
         List<PostViewModel> posts =
                 this.postService.getAllPostsByUsername(principal.getName())
                 .stream()
-                .map(post -> this.mapper.map(post, PostViewModel.class))
+                .map(post -> {
+                    PostViewModel postViewModel = this.mapper.map(post, PostViewModel.class);
+                    postViewModel.setUsersLikedPost(post.getUsersLikedPost().stream().map(UserServiceModel::getId).collect(Collectors.toList()));
+                    return postViewModel;
+                })
                 .collect(Collectors.toList());
 
         modelAndView.addObject("posts", posts);
         return view("dashboard", modelAndView);
+    }
+
+    @PostMapping("/post/like/{id}")
+    public ModelAndView likePost(@PathVariable("id") String id, Principal principal) {
+        this.postService.likePost(id, principal.getName());
+        return redirect("/dashboard");
     }
 }

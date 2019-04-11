@@ -1,6 +1,5 @@
 package com.softuni.my_book.web.controllers;
 
-import com.softuni.my_book.constants.ErrorMessages;
 import com.softuni.my_book.domain.models.binding.UserRegisterBindingModel;
 import com.softuni.my_book.domain.models.service.UserServiceModel;
 import com.softuni.my_book.domain.models.view.UserAddFriendViewModel;

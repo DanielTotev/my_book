@@ -1,4 +1,4 @@
-package com.softuni.my_book.errors.user;
+package com.softuni.my_book.errors.post;
 
 import com.softuni.my_book.errors.base.BaseCustomException;
 import org.springframework.http.HttpStatus;

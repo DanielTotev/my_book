@@ -8,4 +8,8 @@ public interface PostService {
     PostServiceModel savePost(PostServiceModel postServiceModel);
 
     List<PostServiceModel> getAllPostsByUsername(String username);
+
+    boolean likePost(String postId, String username);
+
+    PostServiceModel findById(String id);
 }
