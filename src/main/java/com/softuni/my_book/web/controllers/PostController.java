@@ -20,6 +20,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import java.io.IOException;
 import java.security.Principal;
+import java.util.List;
 
 @Controller
 public class PostController extends BaseController {
@@ -40,7 +41,7 @@ public class PostController extends BaseController {
     @GetMapping("/post/create")
     @PreAuthorize("isAuthenticated()")
     public ModelAndView createPost(@ModelAttribute("bindingModel") PostCreateBindingModel postCreateBindingModel) {
-        return super.view("post-create");
+        return view("post-create");
     }
 
     @PostMapping("/post/create")
@@ -57,9 +58,18 @@ public class PostController extends BaseController {
         } catch (BaseCustomException ex) {
             String message = ex.getClass().getAnnotation(ResponseStatus.class).reason();
             modelAndView.addObject("error", message);
-            return super.view("post-create", modelAndView);
+            return view("post-create", modelAndView);
         }
 
-        return super.redirect("/dashboard");
+        return redirect("/dashboard");
+    }
+
+    @GetMapping("/dashboard")
+    @PreAuthorize("isAuthenticated()")
+    public ModelAndView dashboard(ModelAndView modelAndView, Principal principal) {
+        List<PostServiceModel> posts =
+                this.postService.getAllPostsByUsername(principal.getName());
+
+        return null;
     }
 }

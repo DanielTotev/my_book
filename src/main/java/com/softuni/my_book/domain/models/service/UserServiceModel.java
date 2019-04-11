@@ -21,6 +21,7 @@ public class UserServiceModel {
     private Set<Role> authorities;
     private List<UserServiceModel> friends;
     private ProfileServiceModel profile;
+    private List<PostServiceModel> posts;
 
     public UserServiceModel() {
         this.authorities = new HashSet<>();
@@ -119,5 +120,13 @@ public class UserServiceModel {
 
     public void setProfile(ProfileServiceModel profile) {
         this.profile = profile;
+    }
+
+    public List<PostServiceModel> getPosts() {
+        return posts;
+    }
+
+    public void setPosts(List<PostServiceModel> posts) {
+        this.posts = posts;
     }
 }

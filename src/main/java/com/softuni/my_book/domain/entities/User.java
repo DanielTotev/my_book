@@ -1,6 +1,8 @@
 package com.softuni.my_book.domain.entities;
 
 import com.softuni.my_book.domain.entities.base.BaseEntity;
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
@@ -23,6 +25,7 @@ public class User extends BaseEntity implements UserDetails {
     private Set<Role> authorities;
     private List<User> friends;
     private Profile profile;
+    private List<Post> posts;
 
     public User() {
         this.authorities = new HashSet<>();
@@ -130,5 +133,15 @@ public class User extends BaseEntity implements UserDetails {
 
     public void setProfile(Profile profile) {
         this.profile = profile;
+    }
+
+    @OneToMany(targetEntity = Post.class, mappedBy = "uploader")
+    @LazyCollection(LazyCollectionOption.FALSE)
+    public List<Post> getPosts() {
+        return posts;
+    }
+
+    public void setPosts(List<Post> posts) {
+        this.posts = posts;
     }
 }
