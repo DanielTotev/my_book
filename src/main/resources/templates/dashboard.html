@@ -18,11 +18,13 @@
                 <div class="card-body">
                     <h5 class="card-title" th:text="${post.title}"></h5>
                     <i class="far fa-thumbs-up"></i><span th:text="${post.usersLikedPost.size()} + ' likes'"></span>
-                    <form th:action="@{/post/like/{id}(id=${post.id})}" th:method="POST" style="display: inline-block;">
+                    <form th:if="${!post.usersLikedPost.contains(#authentication.getPrincipal().getId())}" th:action="@{/post/like/{id}(id=${post.id})}" th:method="POST" style="display: inline-block;">
                         <input type="submit" id="submit" class="btn btn-success" value="Like">
                     </form>
                 </div>
             </div>
+            <!--<span th:text ="${#authentication.getPrincipal().getUser().getFirstName()}"></span>-->
+            <!--<span th:text="${#authentication.getPrincipal().getId()}"></span>-->
         </div>
 
         <!--<div class="card mb-3">-->
