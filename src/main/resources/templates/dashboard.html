@@ -21,6 +21,8 @@
                     <form th:if="${!post.usersLikedPost.contains(#authentication.getPrincipal().getId())}" th:action="@{/post/like/{id}(id=${post.id})}" th:method="POST" style="display: inline-block;">
                         <input type="submit" id="submit" class="btn btn-success" value="Like">
                     </form>
+                    <a th:if="${#authentication.getPrincipal().getId() == post.getUploaderId() || #strings.contains(roles, 'ROLE_ADMIN') || #strings.contains(roles, 'ROLE_MODERATOR')}" th:href="@{/post/edit/{id}(id=${post.id})}" class="btn btn-primary">Edit</a>
+                    <a th:if="${#authentication.getPrincipal().getId() == post.getUploaderId() || #strings.contains(roles, 'ROLE_ADMIN') || #strings.contains(roles, 'ROLE_MODERATOR')}" th:href="@{/post/delete/{id}(id=${post.id})}" class="btn btn-danger">Delete</a>
                 </div>
             </div>
             <!--<span th:text ="${#authentication.getPrincipal().getUser().getFirstName()}"></span>-->

@@ -1,5 +1,6 @@
 package com.softuni.my_book.web.controllers;
 
+import com.softuni.my_book.domain.entities.Role;
 import com.softuni.my_book.domain.models.binding.PostCreateBindingModel;
 import com.softuni.my_book.domain.models.service.PostServiceModel;
 import com.softuni.my_book.domain.models.service.UserServiceModel;
@@ -66,17 +67,25 @@ public class PostController extends BaseController {
     @GetMapping("/dashboard")
     @PreAuthorize("isAuthenticated()")
     public ModelAndView dashboard(ModelAndView modelAndView, Principal principal) {
+        List<String> currentUserRoles = this.userService.findByUsername(principal.getName())
+                .getAuthorities()
+                .stream()
+                .map(Role::getAuthority)
+                .collect(Collectors.toList());
+
         List<PostViewModel> posts =
                 this.postService.getAllPostsByUsername(principal.getName())
                 .stream()
                 .map(post -> {
                     PostViewModel postViewModel = this.mapper.map(post, PostViewModel.class);
                     postViewModel.setUsersLikedPost(post.getUsersLikedPost().stream().map(UserServiceModel::getId).collect(Collectors.toList()));
+                    postViewModel.setUploaderId(post.getUploader().getId());
                     return postViewModel;
                 })
                 .collect(Collectors.toList());
 
         modelAndView.addObject("posts", posts);
+        modelAndView.addObject("roles", currentUserRoles);
         return view("dashboard", modelAndView);
     }
 
@@ -84,5 +93,11 @@ public class PostController extends BaseController {
     public ModelAndView likePost(@PathVariable("id") String id, Principal principal) {
         this.postService.likePost(id, principal.getName());
         return redirect("/dashboard");
+    }
+
+    @GetMapping("/post/edit/{id}")
+    @PreAuthorize("isAuthenticated()")
+    public ModelAndView editPost(@PathVariable("id") String id, Principal principal) {
+        return null;
     }
 }

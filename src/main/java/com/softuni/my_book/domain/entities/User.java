@@ -144,4 +144,12 @@ public class User extends BaseEntity implements UserDetails {
     public void setPosts(List<Post> posts) {
         this.posts = posts;
     }
+
+//    public boolean isAdmin() {
+//        return getAuthorities().stream().anyMatch(x -> x.getAuthority().equals("ROLE_ADMIN"));
+//    }
+//
+//    public boolean isModerator() {
+//        return getAuthorities().stream().anyMatch(x -> x.getAuthority().equals("ROLE_MODERATOR"));
+//    }
 }

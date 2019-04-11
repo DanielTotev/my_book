@@ -12,4 +12,6 @@ public interface PostService {
     boolean likePost(String postId, String username);
 
     PostServiceModel findById(String id);
+
+    PostServiceModel edit(PostServiceModel postId, String userUsername);
 }

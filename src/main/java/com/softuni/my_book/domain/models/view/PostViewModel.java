@@ -7,6 +7,7 @@ public class PostViewModel {
     private String title;
     private String imageUrl;
     private List<String> usersLikedPost;
+    private String uploaderId;
 
 
     public String getId() {
@@ -39,5 +40,13 @@ public class PostViewModel {
 
     public void setUsersLikedPost(List<String> usersLikedPost) {
         this.usersLikedPost = usersLikedPost;
+    }
+
+    public String getUploaderId() {
+        return uploaderId;
+    }
+
+    public void setUploaderId(String uploaderId) {
+        this.uploaderId = uploaderId;
     }
 }

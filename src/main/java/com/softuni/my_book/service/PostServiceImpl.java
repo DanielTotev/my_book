@@ -7,6 +7,7 @@ import com.softuni.my_book.domain.models.service.UserServiceModel;
 import com.softuni.my_book.errors.post.IllegalPostDataException;
 import com.softuni.my_book.errors.post.PostAlreadyLikedException;
 import com.softuni.my_book.errors.post.PostNotFoundException;
+import com.softuni.my_book.errors.user.UserDoesNotHaveRightsException;
 import com.softuni.my_book.repository.PostRepository;
 import com.softuni.my_book.service.contracts.PostService;
 import com.softuni.my_book.service.contracts.UserService;
@@ -37,7 +38,7 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public PostServiceModel savePost(PostServiceModel postServiceModel) {
-        if(!this.validationUtils.isValid(postServiceModel)) {
+        if (!this.validationUtils.isValid(postServiceModel)) {
             throw new IllegalPostDataException();
         }
         Post savedPost = this.postRepository.saveAndFlush(this.mapper.map(postServiceModel, Post.class));
@@ -60,7 +61,7 @@ public class PostServiceImpl implements PostService {
         PostServiceModel postServiceModel = findById(postId);
         postServiceModel.getUsersLikedPost().add(userServiceModel);
 
-        if(postServiceModel.getUsersLikedPost().stream().anyMatch(x -> x.getUsername().equals(username))) {
+        if (postServiceModel.getUsersLikedPost().stream().anyMatch(x -> x.getUsername().equals(username))) {
             throw new PostAlreadyLikedException();
         }
 
@@ -75,6 +76,23 @@ public class PostServiceImpl implements PostService {
         return this.mapper.map(post, PostServiceModel.class);
     }
 
+    @Override
+    public PostServiceModel edit(PostServiceModel post, String userUsername) {
+        Post postFromDb = this.postRepository.findById(post.getId()).orElseThrow(PostNotFoundException::new);
+        UserServiceModel userThatMadeChange = this.userService.findByUsername(userUsername);
+
+        if (!userThatMadeChange.getUsername().equals(postFromDb.getUploader().getUsername()) &&
+                userThatMadeChange.getAuthorities().stream().noneMatch(r -> r.getAuthority().equals("ROLE_MODERATOR"))
+                && userThatMadeChange.getAuthorities().stream().noneMatch(r -> r.getAuthority().equals("ROLE_ADMIN"))) {
+            throw new UserDoesNotHaveRightsException();
+        }
+
+        postFromDb.setImageUrl(post.getImageUrl());
+        postFromDb.setTitle(post.getTitle());
+        Post updatedPost = this.postRepository.saveAndFlush(postFromDb);
+        return this.mapper.map(updatedPost, PostServiceModel.class);
+    }
+
     private CompletableFuture<List<PostServiceModel>> getUserPosts(String username) {
         List<PostServiceModel> posts = postRepository.getAllByUploaderUsername(username)
                 .stream()
@@ -84,7 +102,7 @@ public class PostServiceImpl implements PostService {
         return CompletableFuture.completedFuture(posts);
     }
 
-    private CompletableFuture<List<PostServiceModel>>getFriendsPostsByUsername(String username) {
+    private CompletableFuture<List<PostServiceModel>> getFriendsPostsByUsername(String username) {
         List<PostServiceModel> posts = this.postRepository.getFriendsPosts(username)
                 .stream()
                 .map(x -> this.mapper.map(x, PostServiceModel.class))
