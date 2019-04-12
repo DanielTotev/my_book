@@ -2,6 +2,7 @@ package com.softuni.my_book.web.controllers;
 
 import com.softuni.my_book.domain.entities.Role;
 import com.softuni.my_book.domain.models.binding.PostCreateBindingModel;
+import com.softuni.my_book.domain.models.binding.PostEditBindingModel;
 import com.softuni.my_book.domain.models.service.PostServiceModel;
 import com.softuni.my_book.domain.models.service.UserServiceModel;
 import com.softuni.my_book.domain.models.view.PostViewModel;
@@ -75,14 +76,14 @@ public class PostController extends BaseController {
 
         List<PostViewModel> posts =
                 this.postService.getAllPostsByUsername(principal.getName())
-                .stream()
-                .map(post -> {
-                    PostViewModel postViewModel = this.mapper.map(post, PostViewModel.class);
-                    postViewModel.setUsersLikedPost(post.getUsersLikedPost().stream().map(UserServiceModel::getId).collect(Collectors.toList()));
-                    postViewModel.setUploaderId(post.getUploader().getId());
-                    return postViewModel;
-                })
-                .collect(Collectors.toList());
+                        .stream()
+                        .map(post -> {
+                            PostViewModel postViewModel = this.mapper.map(post, PostViewModel.class);
+                            postViewModel.setUsersLikedPost(post.getUsersLikedPost().stream().map(UserServiceModel::getId).collect(Collectors.toList()));
+                            postViewModel.setUploaderId(post.getUploader().getId());
+                            return postViewModel;
+                        })
+                        .collect(Collectors.toList());
 
         modelAndView.addObject("posts", posts);
         modelAndView.addObject("roles", currentUserRoles);
@@ -97,7 +98,22 @@ public class PostController extends BaseController {
 
     @GetMapping("/post/edit/{id}")
     @PreAuthorize("isAuthenticated()")
-    public ModelAndView editPost(@PathVariable("id") String id, Principal principal) {
-        return null;
+    public ModelAndView editPost(@PathVariable("id") String id, Principal principal, ModelAndView modelAndView, @ModelAttribute("bindingModel") PostEditBindingModel bindingModel) {
+        PostServiceModel postServiceModel = this.postService.findById(id);
+        UserServiceModel user = this.userService.findByUsername(principal.getName());
+
+        if (!(postServiceModel.getUploader().getUsername().equals(user.getUsername()) ||
+                user.getAuthorities().stream().anyMatch(r -> r.getAuthority().equals("ROLE_MODERATOR"))
+                || user.getAuthorities().stream().anyMatch(r -> r.getAuthority().equals("ROLE_ADMIN")))) {
+            return redirect("/dashboard");
+        }
+        bindingModel = this.mapper.map(postServiceModel, PostEditBindingModel.class);
+        modelAndView.addObject("bindingModel", bindingModel);
+        return view("post-edit");
     }
+
+
+//    public ModelAndView deletePost() {
+//
+//    }
 }
