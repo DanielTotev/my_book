@@ -1,9 +1,7 @@
 package com.softuni.my_book.web.controllers;
 
-import com.softuni.my_book.domain.models.service.UserServiceModel;
 import com.softuni.my_book.domain.models.view.FriendRequestViewModel;
 import com.softuni.my_book.service.contracts.FriendRequestService;
-import com.softuni.my_book.service.contracts.UserService;
 import com.softuni.my_book.web.controllers.base.BaseController;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,32 +19,18 @@ import java.util.stream.Collectors;
 @Controller
 public class FriendRequestController extends BaseController {
     private final FriendRequestService friendRequestService;
-    private final UserService userService;
     private final ModelMapper mapper;
 
     @Autowired
-    public FriendRequestController(FriendRequestService friendRequestService, UserService userService, ModelMapper mapper) {
+    public FriendRequestController(FriendRequestService friendRequestService, ModelMapper mapper) {
         this.friendRequestService = friendRequestService;
-        this.userService = userService;
         this.mapper = mapper;
     }
 
     @PostMapping("/addFriend")
     @PreAuthorize("isAuthenticated()")
     public ModelAndView addFriendConfirm(@RequestParam("friend_username") String friendUsername, Principal principal) {
-        UserServiceModel currentUser = this.userService.findByUsername(principal.getName());
-        UserServiceModel friendToAdd = this.userService.findByUsername(friendUsername);
-
-        if(currentUser == null || friendToAdd == null) {
-            throw new IllegalArgumentException("Something went wrong");
-        }
-
-        boolean isSend = this.friendRequestService.sendFriendRequest(currentUser, friendToAdd);
-
-        if(!isSend) {
-            throw new IllegalArgumentException("Something went wrong");
-        }
-
+        this.friendRequestService.sendFriendRequest(principal.getName(), friendUsername);
         return super.redirect("/friends/discover");
     }
 
@@ -72,24 +56,14 @@ public class FriendRequestController extends BaseController {
     @PostMapping("/friendRequest/accept")
     @PreAuthorize("isAuthenticated()")
     public ModelAndView acceptFriendRequest(@RequestParam("id") String requestId) {
-        boolean isSuccessful = this.friendRequestService.acceptFriendRequest(requestId);
-
-        if(!isSuccessful) {
-            throw new IllegalArgumentException("Something went wrong!");
-        }
-
+        this.friendRequestService.acceptFriendRequest(requestId);
         return super.redirect("/friends/request");
     }
 
     @PostMapping("/friendRequest/decline")
     @PreAuthorize("isAuthenticated()")
     public ModelAndView declineFriendRequest(@RequestParam("id") String id) {
-        boolean isSuccessful = this.friendRequestService.declineFriendRequest(id);
-
-        if(!isSuccessful) {
-            throw new IllegalArgumentException("Something went wrong!");
-        }
-
+        this.friendRequestService.declineFriendRequest(id);
         return super.redirect("/friends/request");
     }
 }

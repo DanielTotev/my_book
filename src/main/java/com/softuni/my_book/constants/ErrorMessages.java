@@ -16,5 +16,7 @@ public final class ErrorMessages {
 
     public static final String CHAT_NOT_FOUND_MESSAGE = "Chat not found!";
 
+    public static final String FRIEND_REQUEST_NOT_FOUND_EXCEPTION = "Friend request not found!";
+
     private ErrorMessages() { }
 }

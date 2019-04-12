@@ -4,6 +4,7 @@ import com.softuni.my_book.domain.entities.FriendRequest;
 import com.softuni.my_book.domain.entities.User;
 import com.softuni.my_book.domain.models.service.FriendRequestServiceModel;
 import com.softuni.my_book.domain.models.service.UserServiceModel;
+import com.softuni.my_book.errors.friendRequest.FriendRequestNotFoundException;
 import com.softuni.my_book.repository.FriendRequestRepository;
 import com.softuni.my_book.service.contracts.EmailService;
 import com.softuni.my_book.service.contracts.FriendRequestService;
@@ -36,18 +37,17 @@ public class FriendRequestServiceImpl implements FriendRequestService {
     }
 
     @Override
-    public boolean sendFriendRequest(UserServiceModel sender, UserServiceModel recipient) {
-        try {
-            FriendRequest request = new FriendRequest();
-            request.setUser(this.mapper.map(sender, User.class));
-            request.setRequestedFriend(this.mapper.map(recipient, User.class));
-            request.setSendAt(LocalDate.now());
-            this.friendRequestRepository.saveAndFlush(request);
-            return true;
-        } catch (Exception e) {
-            e.printStackTrace();
-            return false;
-        }
+    public boolean sendFriendRequest(String senderUsername, String recipientUsername) {
+        UserServiceModel sender = this.userService.findByUsername(senderUsername);
+        UserServiceModel recipient = this.userService.findByUsername(recipientUsername);
+
+        FriendRequest request = new FriendRequest();
+        request.setUser(this.mapper.map(sender, User.class));
+        request.setRequestedFriend(this.mapper.map(recipient, User.class));
+        request.setSendAt(LocalDate.now());
+        this.friendRequestRepository.saveAndFlush(request);
+
+        return true;
     }
 
     @Override
@@ -72,35 +72,19 @@ public class FriendRequestServiceImpl implements FriendRequestService {
     @Transactional
     public boolean acceptFriendRequest(String friendRequestId) {
         FriendRequest friendRequest =
-                this.friendRequestRepository.findById(friendRequestId).orElse(null);
+                this.friendRequestRepository.findById(friendRequestId).orElseThrow(FriendRequestNotFoundException::new);
+        String senderId = friendRequest.getUser().getId();
+        String recipientId = friendRequest.getRequestedFriend().getId();
 
-        try {
-            if(friendRequest == null) {
-                throw new IllegalArgumentException("No request with such id");
-            }
-
-            String senderId = friendRequest.getUser().getId();
-            String recipientId = friendRequest.getRequestedFriend().getId();
-
-            this.userService.makeFriends(senderId, recipientId);
-            this.friendRequestRepository.delete(friendRequest);
-
-            return true;
-        } catch (Exception e) {
-            e.printStackTrace();
-            return false;
-        }
+        this.userService.makeFriends(senderId, recipientId);
+        this.friendRequestRepository.delete(friendRequest);
+        return true;
     }
 
     @Override
     public boolean declineFriendRequest(String friendRequestId) {
-        try {
-            this.friendRequestRepository.deleteById(friendRequestId);
-            return true;
-        } catch (Exception e) {
-            e.printStackTrace();
-            return false;
-        }
+        this.friendRequestRepository.deleteById(friendRequestId);
+        return true;
     }
 
     @Scheduled(cron = "0 0 12 * * ?")

@@ -6,7 +6,7 @@ import com.softuni.my_book.domain.models.service.UserServiceModel;
 import java.util.List;
 
 public interface FriendRequestService {
-    boolean sendFriendRequest(UserServiceModel sender, UserServiceModel recipient);
+    boolean sendFriendRequest(String senderUsername, String recipientUsername);
 
     List<String> getUserRequestedFriendsIds(String id);
 
