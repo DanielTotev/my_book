@@ -14,5 +14,7 @@ public final class ErrorMessages {
     public static final String POST_NOT_FOUND_MESSAGE = "Post not found!";
     public static final String POST_ALREADY_LIKED_MESSAGE = "You have already liked this post once!";
 
+    public static final String CHAT_NOT_FOUND_MESSAGE = "Chat not found!";
+
     private ErrorMessages() { }
 }

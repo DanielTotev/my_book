@@ -3,6 +3,7 @@ package com.softuni.my_book.service;
 import com.softuni.my_book.domain.entities.Chat;
 import com.softuni.my_book.domain.entities.User;
 import com.softuni.my_book.domain.models.service.ChatServiceModel;
+import com.softuni.my_book.errors.chat.ChatNotFoundException;
 import com.softuni.my_book.repository.ChatRepository;
 import com.softuni.my_book.service.contracts.ChatService;
 import com.softuni.my_book.service.contracts.UserService;
@@ -25,26 +26,11 @@ public class ChatServiceImpl implements ChatService {
         this.mapper = mapper;
     }
 
-//    @Override
-//    public ChatServiceModel saveChat(ChatServiceModel chatServiceModel) {
-//        try {
-//            Chat chat = this.mapper.map(chatServiceModel, Chat.class);
-//            return this.mapper.map(this.chatRepository.saveAndFlush(chat), ChatServiceModel.class);
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//            return null;
-//        }
-//    }
-
     @Override
     public ChatServiceModel saveChat(String firstUserUsername, String secondUserUsername) {
         Chat chat = new Chat();
         User firstUser = this.mapper.map(this.userService.findByUsername(firstUserUsername), User.class);
         User secondUser = this.mapper.map(this.userService.findByUsername(secondUserUsername), User.class);
-
-        if(firstUser == null || secondUser == null) {
-            throw new IllegalArgumentException("Something went wrong!");
-        }
 
         chat.setFirstUser(firstUser);
         chat.setSecondUser(secondUser);
@@ -55,22 +41,15 @@ public class ChatServiceImpl implements ChatService {
     @Override
     public ChatServiceModel findByUsernames(String[] usernames) {
         Chat chat = this.chatRepository.getChatByUsernames(usernames).orElse(null);
-
         if(chat == null) {
             return null;
         }
-
         return this.mapper.map(chat, ChatServiceModel.class);
     }
 
     @Override
     public ChatServiceModel findById(String id) {
-        Chat chat = this.chatRepository.findById(id).orElse(null);
-
-        if(chat == null) {
-            throw new IllegalArgumentException("Something went wrong");
-        }
-
+        Chat chat = this.chatRepository.findById(id).orElseThrow(ChatNotFoundException::new);
         return this.mapper.map(chat, ChatServiceModel.class);
     }
 }
