@@ -14,4 +14,6 @@ public interface PostService {
     PostServiceModel findById(String id);
 
     PostServiceModel edit(PostServiceModel postId, String userUsername);
+
+    PostServiceModel deletePost(String postId, String userUsername);
 }

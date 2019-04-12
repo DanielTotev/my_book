@@ -134,7 +134,9 @@ public class PostController extends BaseController {
         return redirect("/dashboard");
     }
 
-//    public ModelAndView deletePost() {
-//
-//    }
+    @PostMapping("/post/delete/{id}")
+    public ModelAndView deletePost(@PathVariable("id") String id, Principal principal) {
+        this.postService.deletePost(id, principal.getName());
+        return redirect("/dashboard");
+    }
 }

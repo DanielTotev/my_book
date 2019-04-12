@@ -59,11 +59,11 @@ public class PostServiceImpl implements PostService {
     public boolean likePost(String postId, String username) {
         UserServiceModel userServiceModel = this.userService.findByUsername(username);
         PostServiceModel postServiceModel = findById(postId);
-        postServiceModel.getUsersLikedPost().add(userServiceModel);
 
         if (postServiceModel.getUsersLikedPost().stream().anyMatch(x -> x.getUsername().equals(username))) {
             throw new PostAlreadyLikedException();
         }
+        postServiceModel.getUsersLikedPost().add(userServiceModel);
 
         Post post = this.mapper.map(postServiceModel, Post.class);
         this.postRepository.saveAndFlush(post);
@@ -97,6 +97,22 @@ public class PostServiceImpl implements PostService {
         postFromDb.setTitle(post.getTitle());
         Post updatedPost = this.postRepository.saveAndFlush(postFromDb);
         return this.mapper.map(updatedPost, PostServiceModel.class);
+    }
+
+    @Override
+    public PostServiceModel deletePost(String postId, String userUsername) {
+        Post post = this.postRepository.findById(postId).orElseThrow(PostNotFoundException::new);
+        UserServiceModel userThatMadeChange = this.userService.findByUsername(userUsername);
+
+        if (!userThatMadeChange.getUsername().equals(post.getUploader().getUsername()) &&
+                userThatMadeChange.getAuthorities().stream().noneMatch(r -> r.getAuthority().equals("ROLE_MODERATOR"))
+                && userThatMadeChange.getAuthorities().stream().noneMatch(r -> r.getAuthority().equals("ROLE_ADMIN"))) {
+            throw new UserDoesNotHaveRightsException();
+        }
+
+        this.postRepository.delete(post);
+
+        return this.mapper.map(post, PostServiceModel.class);
     }
 
     private CompletableFuture<List<PostServiceModel>> getUserPosts(String username) {
