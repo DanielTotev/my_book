@@ -78,6 +78,10 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public PostServiceModel edit(PostServiceModel post, String userUsername) {
+        if(post.getTitle() == null || post.getTitle().equals("")) {
+            throw new IllegalPostDataException();
+        }
+
         Post postFromDb = this.postRepository.findById(post.getId()).orElseThrow(PostNotFoundException::new);
         UserServiceModel userThatMadeChange = this.userService.findByUsername(userUsername);
 
@@ -87,7 +91,9 @@ public class PostServiceImpl implements PostService {
             throw new UserDoesNotHaveRightsException();
         }
 
-        postFromDb.setImageUrl(post.getImageUrl());
+        if(post.getImageUrl() != null) {
+            postFromDb.setImageUrl(post.getImageUrl());
+        }
         postFromDb.setTitle(post.getTitle());
         Post updatedPost = this.postRepository.saveAndFlush(postFromDb);
         return this.mapper.map(updatedPost, PostServiceModel.class);

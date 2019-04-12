@@ -7,6 +7,7 @@ import com.softuni.my_book.domain.models.service.PostServiceModel;
 import com.softuni.my_book.domain.models.service.UserServiceModel;
 import com.softuni.my_book.domain.models.view.PostViewModel;
 import com.softuni.my_book.errors.base.BaseCustomException;
+import com.softuni.my_book.errors.post.IllegalPostDataException;
 import com.softuni.my_book.service.contracts.CloudinaryService;
 import com.softuni.my_book.service.contracts.PostService;
 import com.softuni.my_book.service.contracts.UserService;
@@ -112,6 +113,26 @@ public class PostController extends BaseController {
         return view("post-edit");
     }
 
+    @PostMapping("/post/edit/{id}")
+    @PreAuthorize("isAuthenticated()")
+    public ModelAndView editPostConfirm(@PathVariable("id") String id, @ModelAttribute("bindingModel") PostEditBindingModel bindingModel, ModelAndView modelAndView, Principal principal) throws IOException {
+        PostServiceModel postServiceModel = this.mapper.map(bindingModel, PostServiceModel.class);
+        if(!bindingModel.getImage().isEmpty()) {
+            String imageUrl = this.cloudinaryService.uploadImage(bindingModel.getImage());
+            postServiceModel.setImageUrl(imageUrl);
+        }
+
+        try {
+            this.postService.edit(postServiceModel, principal.getName());
+        } catch (IllegalPostDataException ex) {
+            String error = ex.getClass().getAnnotation(ResponseStatus.class).reason();
+            modelAndView.addObject("error", error);
+            modelAndView.addObject("bindingModel", bindingModel);
+            return view("error", modelAndView);
+        }
+
+        return redirect("/dashboard");
+    }
 
 //    public ModelAndView deletePost() {
 //
