@@ -18,17 +18,11 @@ import java.security.Principal;
 
 @Controller
 public class ChatController extends BaseController {
-    private final UserService userService;
     private final ChatService chatService;
-    private final MessageService messageService;
-    private final ModelMapper mapper;
 
     @Autowired
-    public ChatController(UserService userService, ChatService chatService, MessageService messageService, ModelMapper mapper) {
-        this.userService = userService;
+    public ChatController(ChatService chatService) {
         this.chatService = chatService;
-        this.messageService = messageService;
-        this.mapper = mapper;
     }
 
 
