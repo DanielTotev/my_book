@@ -4,6 +4,7 @@ import com.softuni.my_book.domain.models.binding.ProfileCreateBindingModel;
 import com.softuni.my_book.domain.models.service.ProfileServiceModel;
 import com.softuni.my_book.domain.models.service.UserServiceModel;
 import com.softuni.my_book.domain.models.view.ProfileViewModel;
+import com.softuni.my_book.errors.profile.ProfileNotFoundException;
 import com.softuni.my_book.service.contracts.CloudinaryService;
 import com.softuni.my_book.service.contracts.ProfileService;
 import com.softuni.my_book.service.contracts.UserService;
@@ -43,11 +44,12 @@ public class ProfileController extends BaseController {
     @GetMapping("/profile/create")
     @PreAuthorize("isAuthenticated()")
     public ModelAndView create(Principal principal) {
-        if(this.profileService.getByUsername(principal.getName()) != null) {
+        try {
+            this.profileService.getByUsername(principal.getName());
             return super.redirect("/profile/me");
+        } catch (ProfileNotFoundException ex) {
+            return super.view("profile-create");
         }
-
-        return super.view("profile-create");
     }
 
     @PostMapping("/profile/create")
