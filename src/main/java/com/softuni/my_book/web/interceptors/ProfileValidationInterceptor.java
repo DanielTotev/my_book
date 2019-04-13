@@ -2,6 +2,7 @@ package com.softuni.my_book.web.interceptors;
 
 import com.softuni.my_book.domain.models.securityContext.UserSecurityContextModel;
 import com.softuni.my_book.domain.models.service.ProfileServiceModel;
+import com.softuni.my_book.errors.profile.ProfileNotFoundException;
 import com.softuni.my_book.service.contracts.ProfileService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,13 +31,12 @@ public class ProfileValidationInterceptor extends HandlerInterceptorAdapter {
                 .getAuthentication()
                 .getPrincipal(), UserSecurityContextModel.class);
 
-        ProfileServiceModel profile = this.profileService.getByUsername(user.getUsername());
-
-        if(profile == null) {
+        try {
+            this.profileService.getByUsername(user.getUsername());
+            return true;
+        } catch (ProfileNotFoundException ex) {
             response.sendRedirect("/profile/create");
             return false;
         }
-
-        return true;
     }
 }

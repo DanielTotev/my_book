@@ -26,41 +26,8 @@ import static org.mockito.Mockito.when;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 
-//@SpringBootTest
-//@RunWith(SpringRunner.class)
-//@AutoConfigureTestDatabase(connection = EmbeddedDatabaseConnection.H2)
+@SpringBootTest
+@RunWith(SpringRunner.class)
 public class PostServiceTests {
-//
-//    @Autowired
-//    private PostRepository postRepository;
-//
-//    @Autowired
-//    private ModelMapper mapper;
-//
-//    @Autowired
-//    private ValidationUtils validationUtils;
-//
-//    @MockBean
-//    private UserService userService;
-//
-//    private PostService postService;
-//
-//    @Autowired
-//    private UserRepository userRepository;
-//
-//    @Before
-//    public void beforeTest() {
-//        this.postService = new PostServiceImpl(postRepository, mapper, validationUtils, userService);
-//    }
-//
-//    @Test
-//    public void test_savePost_withCorrectData_expectCorrectOutput() {
-//        //Arrange
-//        User user = new User();
-//        user.setUsername("Test user 1");
-//        user.setUsername("Test user 1");
-//        this.userRepository.saveAndFlush(user);
-//
-//        PostServiceModel postServiceModel = new PostServiceModel();
-//    }
+
 }
