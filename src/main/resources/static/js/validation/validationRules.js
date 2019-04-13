@@ -9,11 +9,14 @@ const validationRules = (() => {
 
     const imageValidator = val => val !== null && !validator.isEmpty(val);
 
+    const notNullValidator = val => val !== null && val !== undefined && val !== '';
+
     return {
         emailValidator,
         usernameValidator,
         passwordValidator,
         titleValidator,
-        imageValidator
+        imageValidator,
+        notNullValidator
     };
 })();
