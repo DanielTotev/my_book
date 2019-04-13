@@ -3,10 +3,8 @@ package com.softuni.my_book.util;
 
 import com.softuni.my_book.util.contracts.ValidationUtils;
 
-import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
 import javax.validation.Validator;
-import java.util.stream.Collectors;
 
 public class ValidationUtilImpl implements ValidationUtils {
     private Validator validator;
@@ -20,10 +18,4 @@ public class ValidationUtilImpl implements ValidationUtils {
         return this.validator.validate(object).size() == 0;
     }
 
-    @Override
-    public <E> String getErrors(E object) {
-        return this.validator.validate(object).stream()
-                .map(ConstraintViolation::getMessage)
-                .collect(Collectors.joining(System.lineSeparator()));
-    }
 }
