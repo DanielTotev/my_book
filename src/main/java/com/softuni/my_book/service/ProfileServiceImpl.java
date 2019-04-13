@@ -2,10 +2,11 @@ package com.softuni.my_book.service;
 
 import com.softuni.my_book.domain.entities.Profile;
 import com.softuni.my_book.domain.models.service.ProfileServiceModel;
+import com.softuni.my_book.errors.profile.InvalidProfileDataException;
 import com.softuni.my_book.errors.profile.ProfileNotFoundException;
 import com.softuni.my_book.repository.ProfileRepository;
 import com.softuni.my_book.service.contracts.ProfileService;
-import com.softuni.my_book.service.contracts.UserService;
+import com.softuni.my_book.util.contracts.ValidationUtils;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -14,26 +15,23 @@ import org.springframework.stereotype.Service;
 public class ProfileServiceImpl implements ProfileService {
     private final ProfileRepository profileRepository;
     private final ModelMapper mapper;
-    private final UserService userService;
+    private final ValidationUtils validationUtils;
 
     @Autowired
-    public ProfileServiceImpl(ProfileRepository profileRepository, ModelMapper mapper, UserService userService) {
+    public ProfileServiceImpl(ProfileRepository profileRepository, ModelMapper mapper, ValidationUtils validationUtils) {
         this.profileRepository = profileRepository;
         this.mapper = mapper;
-        this.userService = userService;
+        this.validationUtils = validationUtils;
     }
 
 
     @Override
     public ProfileServiceModel create(ProfileServiceModel profileServiceModel) {
-        Profile profile = this.mapper.map(profileServiceModel, Profile.class);
-
-        try {
-            return this.mapper.map(this.profileRepository.saveAndFlush(profile), ProfileServiceModel.class);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
+        if(!this.validationUtils.isValid(profileServiceModel)) {
+            throw new InvalidProfileDataException();
         }
+        Profile profile = this.mapper.map(profileServiceModel, Profile.class);
+        return this.mapper.map(this.profileRepository.saveAndFlush(profile), ProfileServiceModel.class);
     }
 
     @Override

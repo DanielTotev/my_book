@@ -9,6 +9,7 @@ public final class ErrorMessages {
     public static final String USER_DOES_NOT_HAVE_RIGHTS_MESSAGE = "You are not allowed to do this!";
 
     public static final String PROFILE_NOT_FOUND_MESSAGE = "No profile found!";
+    public static final String ILLEGAL_PROFILE_MESSAGE = "No profile exception!";
 
     public static final String ILLEGAL_POST_DATA_MESSAGE = "Invalid Input data";
     public static final String POST_NOT_FOUND_MESSAGE = "Post not found!";

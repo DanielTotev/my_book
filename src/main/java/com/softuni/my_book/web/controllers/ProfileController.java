@@ -29,7 +29,6 @@ public class ProfileController extends BaseController {
     private final CloudinaryService cloudinaryService;
     private final UserService userService;
     private final ModelMapper mapper;
-    private final ValidationUtils validationUtils;
 
     @Autowired
     public ProfileController(ProfileService profileService, CloudinaryService cloudinaryService, UserService userService, ModelMapper mapper, ValidationUtils validationUtils) {
@@ -37,7 +36,6 @@ public class ProfileController extends BaseController {
         this.cloudinaryService = cloudinaryService;
         this.userService = userService;
         this.mapper = mapper;
-        this.validationUtils = validationUtils;
     }
 
 
@@ -55,10 +53,6 @@ public class ProfileController extends BaseController {
     @PostMapping("/profile/create")
     @PreAuthorize("isAuthenticated()")
     public ModelAndView createConfirm(@ModelAttribute ProfileCreateBindingModel profileCreateBindingModel, Principal principal) throws IOException {
-        if(!this.validationUtils.isValid(profileCreateBindingModel)) {
-            throw new IllegalArgumentException(this.validationUtils.getErrors(profileCreateBindingModel));
-        }
-
         String uploadedImageUrl = this.cloudinaryService.uploadImage(profileCreateBindingModel.getProfilePicture());
         if(uploadedImageUrl == null) {
             throw new IllegalArgumentException("Picture upload failed");
