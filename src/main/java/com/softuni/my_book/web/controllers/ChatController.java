@@ -2,10 +2,7 @@ package com.softuni.my_book.web.controllers;
 
 import com.softuni.my_book.domain.models.service.ChatServiceModel;
 import com.softuni.my_book.service.contracts.ChatService;
-import com.softuni.my_book.service.contracts.MessageService;
-import com.softuni.my_book.service.contracts.UserService;
 import com.softuni.my_book.web.controllers.base.BaseController;
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
