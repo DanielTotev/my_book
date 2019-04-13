@@ -39,7 +39,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public boolean registerUser(UserServiceModel userServiceModel) {
+    public UserServiceModel registerUser(UserServiceModel userServiceModel) {
         this.seedRoles();
         if (!this.validationUtils.isValid(userServiceModel)) {
             throw new IllegalUserDataException();
@@ -62,8 +62,8 @@ public class UserServiceImpl implements UserService {
             user.getAuthorities().add(this.roleRepository.findByAuthority("ROLE_USER").orElse(null));
         }
 
-        this.userRepository.saveAndFlush(user);
-        return true;
+        User savedUser = this.userRepository.saveAndFlush(user);
+        return this.mapper.map(savedUser, UserServiceModel.class);
     }
 
     @Override

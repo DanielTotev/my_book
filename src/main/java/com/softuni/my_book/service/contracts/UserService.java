@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface UserService extends UserDetailsService {
 
-    boolean registerUser(UserServiceModel userServiceModel);
+    UserServiceModel registerUser(UserServiceModel userServiceModel);
 
     UserServiceModel findById(String id);
 
