@@ -4,13 +4,17 @@ import com.softuni.my_book.domain.entities.User;
 import com.softuni.my_book.domain.enums.Gender;
 import com.softuni.my_book.domain.models.service.ProfileServiceModel;
 import com.softuni.my_book.domain.models.service.UserServiceModel;
+import com.softuni.my_book.domain.models.view.ProfileViewModel;
 import com.softuni.my_book.service.contracts.CloudinaryService;
 import com.softuni.my_book.service.contracts.ProfileService;
 import com.softuni.my_book.service.contracts.UserService;
 import com.softuni.my_book.web.controllers.ProfileController;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
@@ -24,13 +28,14 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMultipartHttpServletRequestBuilder;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.ModelAndView;
 
+import java.security.Principal;
 import java.time.LocalDate;
 
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 
@@ -59,6 +64,9 @@ public class ProfileControllerTests {
 
     @Autowired
     private ModelMapper mapper;
+
+    @Mock
+    private Principal principal;
 
     private ProfileController profileController;
 
@@ -132,5 +140,21 @@ public class ProfileControllerTests {
 
         this.mockMvc.perform(request)
         .andExpect(redirectedUrl(USER_ALREADY_HAS_PROFILE_REDIRECT_URL));
+    }
+
+    @Test
+    public void profileMe_withValidUser_expectProfile(){
+        int profileAge = 20;
+        String profileEducation = "Doctor";
+
+        Mockito.when(this.principal.getName())
+                .thenReturn(this.mockUser.getUsername());
+        this.setUpMockProfile();
+
+        ModelAndView modelAndView = this.profileController.profilePage(new ModelAndView(), this.principal);
+        ProfileViewModel profileViewModel = (ProfileViewModel) modelAndView.getModel().get("profile");
+
+        Assert.assertEquals(profileAge, profileViewModel.getAge());
+        Assert.assertEquals(profileEducation, profileViewModel.getEducation());
     }
 }

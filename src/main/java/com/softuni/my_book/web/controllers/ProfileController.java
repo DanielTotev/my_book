@@ -64,11 +64,6 @@ public class ProfileController extends BaseController {
         profileServiceModel.setUser(userServiceModel);
 
         ProfileServiceModel savedProfile = this.profileService.create(profileServiceModel);
-
-        if(savedProfile == null) {
-            throw new IllegalArgumentException("Something went wrong");
-        }
-
         return super.redirect("/profile/me");
     }
 
