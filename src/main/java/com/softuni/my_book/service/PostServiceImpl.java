@@ -78,7 +78,7 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public PostServiceModel edit(PostServiceModel post, String userUsername) {
-        if(post.getTitle() == null || post.getTitle().equals("")) {
+        if(post == null || post.getTitle() == null || post.getTitle().equals("") || userUsername == null || userUsername.equals("")) {
             throw new IllegalPostDataException();
         }
 
@@ -116,7 +116,7 @@ public class PostServiceImpl implements PostService {
     }
 
     private CompletableFuture<List<PostServiceModel>> getUserPosts(String username) {
-        List<PostServiceModel> posts = postRepository.getAllByUploaderUsername(username)
+        List<PostServiceModel> posts = this.postRepository.getAllByUploaderUsername(username)
                 .stream()
                 .map(p -> this.mapper.map(p, PostServiceModel.class))
                 .collect(Collectors.toList());

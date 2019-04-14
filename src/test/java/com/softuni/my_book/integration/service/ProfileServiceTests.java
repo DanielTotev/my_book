@@ -1,4 +1,4 @@
-package com.softuni.my_book.integration.services;
+package com.softuni.my_book.integration.service;
 
 import com.softuni.my_book.domain.entities.Profile;
 import com.softuni.my_book.domain.enums.Gender;

@@ -1,4 +1,4 @@
-package com.softuni.my_book.integration.services;
+package com.softuni.my_book.integration.service;
 
 
 import com.softuni.my_book.domain.entities.Role;
@@ -16,7 +16,6 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
