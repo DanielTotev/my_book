@@ -4,12 +4,10 @@ import com.softuni.my_book.domain.entities.Chat;
 import com.softuni.my_book.domain.entities.Profile;
 import com.softuni.my_book.domain.entities.User;
 import com.softuni.my_book.domain.enums.Gender;
-import com.softuni.my_book.domain.models.service.ChatServiceModel;
 import com.softuni.my_book.repository.ChatRepository;
 import com.softuni.my_book.repository.ProfileRepository;
 import com.softuni.my_book.repository.UserRepository;
 import com.softuni.my_book.service.contracts.ChatService;
-import com.softuni.my_book.service.contracts.UserService;
 import com.softuni.my_book.web.controllers.ChatController;
 import com.softuni.my_book.web.interceptors.ProfileValidationInterceptor;
 import org.junit.Assert;
@@ -26,16 +24,14 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 
-
 import java.security.Principal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashSet;
 
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
