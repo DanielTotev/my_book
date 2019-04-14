@@ -34,7 +34,7 @@ public class HomeControllerTests {
     @Test
     @WithMockUser
     public void homePage_withAuthenticatedUser_returnsForbidden() throws Exception {
-        mockMvc.perform(get(URL))
+        this.mockMvc.perform(get(URL))
                 .andExpect(status().isForbidden());
     }
 

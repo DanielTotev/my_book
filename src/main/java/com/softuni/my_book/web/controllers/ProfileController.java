@@ -8,7 +8,6 @@ import com.softuni.my_book.errors.profile.ProfileNotFoundException;
 import com.softuni.my_book.service.contracts.CloudinaryService;
 import com.softuni.my_book.service.contracts.ProfileService;
 import com.softuni.my_book.service.contracts.UserService;
-import com.softuni.my_book.util.contracts.ValidationUtils;
 import com.softuni.my_book.web.controllers.base.BaseController;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,7 +30,7 @@ public class ProfileController extends BaseController {
     private final ModelMapper mapper;
 
     @Autowired
-    public ProfileController(ProfileService profileService, CloudinaryService cloudinaryService, UserService userService, ModelMapper mapper, ValidationUtils validationUtils) {
+    public ProfileController(ProfileService profileService, CloudinaryService cloudinaryService, UserService userService, ModelMapper mapper) {
         this.profileService = profileService;
         this.cloudinaryService = cloudinaryService;
         this.userService = userService;
