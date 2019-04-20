@@ -11,8 +11,6 @@ public interface UserService extends UserDetailsService {
 
     UserServiceModel findById(String id);
 
-    UserServiceModel merge(UserServiceModel userService);
-
     UserServiceModel findByUsername(String username);
 
     List<UserServiceModel> findAll();

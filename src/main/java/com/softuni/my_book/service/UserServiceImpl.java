@@ -41,13 +41,9 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserServiceModel registerUser(UserServiceModel userServiceModel) {
         this.seedRoles();
-        if (!this.validationUtils.isValid(userServiceModel)) {
-            throw new IllegalUserDataException();
-        }
 
-        if (this.userRepository.findByUsername(userServiceModel.getUsername()).orElse(null) != null) {
-            throw new UserAlreadyExistsException();
-        }
+        this.validateUser(userServiceModel);
+        this.checkIfUserExists(userServiceModel.getUsername());
 
         User user = this.mapper.map(userServiceModel, User.class);
         user.setPassword(this.encoder.encode(user.getPassword()));
@@ -55,12 +51,7 @@ public class UserServiceImpl implements UserService {
         user.setAccountNonLocked(true);
         user.setCredentialsNonExpired(true);
         user.setEnabled(true);
-
-        if (this.userRepository.count() == 0) {
-            user.getAuthorities().add(this.roleRepository.findByAuthority("ROLE_ADMIN").orElse(null));
-        } else {
-            user.getAuthorities().add(this.roleRepository.findByAuthority("ROLE_USER").orElse(null));
-        }
+        this.setRole(user);
 
         User savedUser = this.userRepository.saveAndFlush(user);
         return this.mapper.map(savedUser, UserServiceModel.class);
@@ -70,13 +61,6 @@ public class UserServiceImpl implements UserService {
     public UserServiceModel findById(String id) {
         User user = this.userRepository.findById(id).orElseThrow(UserNotFoundException::new);
         return this.mapper.map(user, UserServiceModel.class);
-    }
-
-    @Override
-    public UserServiceModel merge(UserServiceModel userServiceModel) {
-//        User user = this.mapper.map(userServiceModel, User.class);
-
-        return null;
     }
 
     @Override
@@ -154,6 +138,26 @@ public class UserServiceImpl implements UserService {
             this.roleRepository.saveAndFlush(user);
             this.roleRepository.saveAndFlush(admin);
             this.roleRepository.saveAndFlush(moderator);
+        }
+    }
+
+    private void checkIfUserExists(String username) {
+        if (this.userRepository.findByUsername(username).orElse(null) != null) {
+            throw new UserAlreadyExistsException();
+        }
+    }
+
+    private void validateUser(UserServiceModel userServiceModel) {
+        if (!this.validationUtils.isValid(userServiceModel)) {
+            throw new IllegalUserDataException();
+        }
+    }
+
+    private void setRole(User user) {
+        if (this.userRepository.count() == 0) {
+            user.getAuthorities().add(this.roleRepository.findByAuthority("ROLE_ADMIN").orElse(null));
+        } else {
+            user.getAuthorities().add(this.roleRepository.findByAuthority("ROLE_USER").orElse(null));
         }
     }
 }
