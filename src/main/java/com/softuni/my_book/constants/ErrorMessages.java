@@ -19,5 +19,7 @@ public final class ErrorMessages {
 
     public static final String FRIEND_REQUEST_NOT_FOUND_EXCEPTION = "Friend request not found!";
 
+    public static final String RECAPTCHA_MESSAGE = "reCaptcha error! Please Try again!";
+
     private ErrorMessages() { }
 }

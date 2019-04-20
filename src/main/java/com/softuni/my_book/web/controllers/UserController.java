@@ -6,17 +6,21 @@ import com.softuni.my_book.domain.models.view.UserAddFriendViewModel;
 import com.softuni.my_book.domain.models.view.UserAllViewModel;
 import com.softuni.my_book.domain.models.view.UserFriendViewModel;
 import com.softuni.my_book.errors.base.BaseCustomException;
+import com.softuni.my_book.errors.recaptcha.RecaptchaException;
 import com.softuni.my_book.errors.user.UserPasswordsDoNotMatchException;
 import com.softuni.my_book.service.contracts.FriendRequestService;
+import com.softuni.my_book.service.contracts.RecaptchaService;
 import com.softuni.my_book.service.contracts.UserService;
 import com.softuni.my_book.web.controllers.base.BaseController;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.repository.query.Param;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
+import javax.servlet.http.HttpServletRequest;
 import java.security.Principal;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -26,12 +30,14 @@ public class UserController extends BaseController {
     private final UserService userService;
     private final ModelMapper mapper;
     private final FriendRequestService friendRequestService;
+    private final RecaptchaService recaptchaService;
 
     @Autowired
-    public UserController(UserService userService, ModelMapper mapper, FriendRequestService friendRequestService) {
+    public UserController(UserService userService, ModelMapper mapper, FriendRequestService friendRequestService, RecaptchaService recaptchaService) {
         this.userService = userService;
         this.mapper = mapper;
         this.friendRequestService = friendRequestService;
+        this.recaptchaService = recaptchaService;
     }
 
 
@@ -41,9 +47,17 @@ public class UserController extends BaseController {
     }
 
     @PostMapping("/register")
-    public ModelAndView registerConfirm(@ModelAttribute(name = "bindingModel") UserRegisterBindingModel userRegisterBindingModel, ModelAndView modelAndView) {
+    public ModelAndView registerConfirm(@ModelAttribute(name = "bindingModel") UserRegisterBindingModel userRegisterBindingModel,
+                                        ModelAndView modelAndView,
+                                        @RequestParam("g-recaptcha-response") String gRecaptchaResponse,
+                                        HttpServletRequest request) {
+
         try {
-            if(!userRegisterBindingModel.getPassword().equals(userRegisterBindingModel.getConfirmPassword())) {
+            if(this.recaptchaService.verifyRecapture(request.getRemoteAddr(), gRecaptchaResponse) == null) {
+                throw new RecaptchaException();
+            }
+
+            if (!userRegisterBindingModel.getPassword().equals(userRegisterBindingModel.getConfirmPassword())) {
                 throw new UserPasswordsDoNotMatchException();
             }
             this.userService.registerUser(this.mapper.map(userRegisterBindingModel, UserServiceModel.class));
@@ -91,15 +105,15 @@ public class UserController extends BaseController {
     public ModelAndView getFriends(Principal principal, ModelAndView modelAndView) {
         List<UserFriendViewModel> friends =
                 this.userService.findByUsername(principal.getName())
-                .getFriends()
-                .stream()
-                .map(u -> {
-                    UserFriendViewModel friend = this.mapper.map(u, UserFriendViewModel.class);
-                    friend.setProfilePicture(u.getProfile().getProfilePicture());
+                        .getFriends()
+                        .stream()
+                        .map(u -> {
+                            UserFriendViewModel friend = this.mapper.map(u, UserFriendViewModel.class);
+                            friend.setProfilePicture(u.getProfile().getProfilePicture());
 
-                    return friend;
-                })
-                .collect(Collectors.toList());
+                            return friend;
+                        })
+                        .collect(Collectors.toList());
         modelAndView.addObject("friends", friends);
 
         return super.view("friends", modelAndView);
@@ -118,13 +132,13 @@ public class UserController extends BaseController {
     }
 
     @PostMapping("/users/set-moderator/{id}")
-    public ModelAndView setModerator(@PathVariable("id") String  id){
+    public ModelAndView setModerator(@PathVariable("id") String id) {
         this.userService.setRole(id, "ROLE_MODERATOR");
         return super.redirect("/admin");
     }
 
     @PostMapping("/users/set-user/{id}")
-    public ModelAndView setUser(@PathVariable("id") String  id){
+    public ModelAndView setUser(@PathVariable("id") String id) {
         this.userService.setRole(id, "ROLE_USER");
         return super.redirect("/admin");
     }

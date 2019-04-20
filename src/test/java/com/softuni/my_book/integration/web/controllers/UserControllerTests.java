@@ -1,6 +1,7 @@
 package com.softuni.my_book.integration.web.controllers;
 
 import com.softuni.my_book.service.contracts.FriendRequestService;
+import com.softuni.my_book.service.contracts.RecaptchaService;
 import com.softuni.my_book.service.contracts.UserService;
 import com.softuni.my_book.web.controllers.UserController;
 import org.junit.Before;
@@ -71,11 +72,14 @@ public class UserControllerTests {
     @Autowired
     private MockMvc mockMvc;
 
+    @Autowired
+    private RecaptchaService recaptchaService;
+
     private UserController userController;
 
     @Before
     public void init() {
-        this.userController = new UserController(this.userService, this.mapper, this.friendRequestService);
+        this.userController = new UserController(this.userService, this.mapper, this.friendRequestService, this.recaptchaService);
     }
 
     @Test
