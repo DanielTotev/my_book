@@ -60,7 +60,7 @@ public class PostServiceImpl implements PostService {
         UserServiceModel userServiceModel = this.userService.findByUsername(username);
         PostServiceModel postServiceModel = findById(postId);
 
-        if (postServiceModel.getUsersLikedPost().stream().anyMatch(x -> x.getUsername().equals(username))) {
+        if (isLikedByCurrentUser(postServiceModel, username)) {
             throw new PostAlreadyLikedException();
         }
         postServiceModel.getUsersLikedPost().add(userServiceModel);
@@ -83,13 +83,7 @@ public class PostServiceImpl implements PostService {
         }
 
         Post postFromDb = this.postRepository.findById(post.getId()).orElseThrow(PostNotFoundException::new);
-        UserServiceModel userThatMadeChange = this.userService.findByUsername(userUsername);
-
-        if (!userThatMadeChange.getUsername().equals(postFromDb.getUploader().getUsername()) &&
-                userThatMadeChange.getAuthorities().stream().noneMatch(r -> r.getAuthority().equals("ROLE_MODERATOR"))
-                && userThatMadeChange.getAuthorities().stream().noneMatch(r -> r.getAuthority().equals("ROLE_ADMIN"))) {
-            throw new UserDoesNotHaveRightsException();
-        }
+        checkIfUserHasRights(userUsername, postFromDb);
 
         if(post.getImageUrl() != null) {
             postFromDb.setImageUrl(post.getImageUrl());
@@ -102,13 +96,7 @@ public class PostServiceImpl implements PostService {
     @Override
     public PostServiceModel deletePost(String postId, String userUsername) {
         Post post = this.postRepository.findById(postId).orElseThrow(PostNotFoundException::new);
-        UserServiceModel userThatMadeChange = this.userService.findByUsername(userUsername);
-
-        if (!userThatMadeChange.getUsername().equals(post.getUploader().getUsername()) &&
-                userThatMadeChange.getAuthorities().stream().noneMatch(r -> r.getAuthority().equals("ROLE_MODERATOR"))
-                && userThatMadeChange.getAuthorities().stream().noneMatch(r -> r.getAuthority().equals("ROLE_ADMIN"))) {
-            throw new UserDoesNotHaveRightsException();
-        }
+        checkIfUserHasRights(userUsername, post);
 
         this.postRepository.delete(post);
 
@@ -131,5 +119,20 @@ public class PostServiceImpl implements PostService {
                 .collect(Collectors.toList());
 
         return CompletableFuture.completedFuture(posts);
+    }
+
+
+    private void checkIfUserHasRights(String userUsername, Post postFromDb) {
+        UserServiceModel userThatMadeChange = this.userService.findByUsername(userUsername);
+
+        if (!userThatMadeChange.getUsername().equals(postFromDb.getUploader().getUsername()) &&
+                userThatMadeChange.getAuthorities().stream().noneMatch(r -> r.getAuthority().equals("ROLE_MODERATOR"))
+                && userThatMadeChange.getAuthorities().stream().noneMatch(r -> r.getAuthority().equals("ROLE_ADMIN"))) {
+            throw new UserDoesNotHaveRightsException();
+        }
+    }
+
+    private boolean isLikedByCurrentUser(PostServiceModel postServiceModel, String username) {
+        return postServiceModel.getUsersLikedPost().stream().anyMatch(x -> x.getUsername().equals(username));
     }
 }
