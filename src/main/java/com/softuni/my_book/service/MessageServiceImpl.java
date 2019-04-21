@@ -2,7 +2,6 @@ package com.softuni.my_book.service;
 
 import com.softuni.my_book.domain.entities.Chat;
 import com.softuni.my_book.domain.entities.Message;
-import com.softuni.my_book.domain.entities.User;
 import com.softuni.my_book.domain.models.service.ChatServiceModel;
 import com.softuni.my_book.domain.models.service.MessageServiceModel;
 import com.softuni.my_book.domain.models.service.UserServiceModel;
@@ -46,10 +45,6 @@ public class MessageServiceImpl implements MessageService {
     public MessageServiceModel saveMessage(String messageText, String chatId, String messageUserUsername) {
         UserServiceModel user = this.userService.findByUsername(messageUserUsername);
         ChatServiceModel chat = this.chatService.findById(chatId);
-
-        if(user == null || chat == null) {
-            throw new IllegalArgumentException("Something went wrong!");
-        }
 
         Message message = new Message();
         message.setText(messageText);
